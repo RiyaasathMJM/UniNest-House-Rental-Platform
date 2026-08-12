@@ -335,21 +335,15 @@ export default function ListingDetailModal({
               </div>
             </div>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <a
-                href={`tel:${landlord.phone}`}
-                className="btn btn-outline text-xs px-3.5 py-2.5 border-slate-300 text-slate-700 font-bold hover:bg-slate-200 flex-1 sm:flex-none"
-              >
-                <Phone size={14} /> Call Owner
-              </a>
+            <div className="w-full sm:w-auto">
               <button
                 onClick={() => {
                   onClose();
                   onOpenChatModal(listing);
                 }}
-                className="btn btn-accent text-xs px-4 py-2.5 font-bold flex-1 sm:flex-none"
+                className="btn btn-primary text-xs px-5 py-3 font-extrabold flex items-center justify-center gap-2 shadow-lg shadow-sky-600/20 w-full sm:w-auto"
               >
-                <MessageSquare size={14} /> Direct Chat
+                <MessageSquare size={16} /> Send Direct Message to Owner
               </button>
             </div>
           </div>

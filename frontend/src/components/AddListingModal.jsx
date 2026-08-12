@@ -13,6 +13,7 @@ export default function AddListingModal({
     type: 'Annex',
     universityId: 'u-colombo',
     address: '',
+    googleMapsUrl: '',
     distanceKm: 0.5,
     walkingTimeMinutes: 6,
     nearbyFaculty: 'Faculty of Science',
@@ -192,13 +193,24 @@ export default function AddListingModal({
               </div>
 
               <div className="space-y-1">
-                <label className="text-slate-700 font-bold block">Full Street Address (Used for Google Maps) *</label>
+                <label className="text-slate-700 font-bold block">Full Street Address *</label>
                 <input
                   type="text"
                   required
                   placeholder="No, Street Name, Town"
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                  className="input-control text-xs bg-slate-50 text-slate-900 border-slate-300 font-medium"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-slate-700 font-bold block">Google Maps Location Link (Optional)</label>
+                <input
+                  type="url"
+                  placeholder="https://maps.google.com/?q=..."
+                  value={formData.googleMapsUrl}
+                  onChange={(e) => setFormData({ ...formData, googleMapsUrl: e.target.value })}
                   className="input-control text-xs bg-slate-50 text-slate-900 border-slate-300 font-medium"
                 />
               </div>

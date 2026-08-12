@@ -161,17 +161,19 @@ export default function ListingCard({
           <div className="flex items-center gap-2">
             
             {/* Compare Button */}
-            <button
-              onClick={() => onToggleCompare(id)}
-              className={`p-2 rounded-xl text-xs font-bold border transition-all ${
-                isCompared
-                  ? 'bg-sky-50 text-sky-700 border-sky-400'
-                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-100'
-              }`}
-              title="Compare side-by-side"
-            >
-              <SlidersHorizontal size={14} />
-            </button>
+            {onToggleCompare && (
+              <button
+                onClick={() => onToggleCompare(id)}
+                className={`p-2 rounded-xl text-xs font-bold border transition-all ${
+                  isCompared
+                    ? 'bg-sky-50 text-sky-700 border-sky-400'
+                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-100'
+                }`}
+                title="Compare side-by-side"
+              >
+                <SlidersHorizontal size={14} />
+              </button>
+            )}
 
             {/* View Details */}
             <button

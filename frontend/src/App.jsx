@@ -174,7 +174,7 @@ export default function App() {
     return listings.filter(l => savedIds.includes(l.id));
   }, [listings, savedIds]);
 
-  const handleLogin = (role) => {
+  const handleLogin = (role, username) => {
     setUserRole(role);
     setActiveTab(role === 'landlord' ? 'landlord' : 'explore');
     setIsAuthenticated(true);
@@ -211,9 +211,11 @@ export default function App() {
             <LandlordDashboard
               listings={listings}
               applications={applications}
+              messages={messages}
               onUpdateApplicationStatus={handleUpdateApplicationStatus}
               onOpenAddListing={() => setIsAddListingModalOpen(true)}
               onDeleteListing={handleDeleteListing}
+              onOpenChatModal={(l) => setChatListing(l)}
             />
           </div>
         ) : activeTab === 'student-portal' ? (
@@ -278,7 +280,7 @@ export default function App() {
                       </p>
                     </div>
 
-                    {compareIds.length > 0 && (
+                    {userRole === 'student' && compareIds.length > 0 && (
                       <button
                         onClick={() => setIsCompareModalOpen(true)}
                         className="btn btn-outline text-xs px-3.5 py-2 border-sky-300 text-sky-700 hover:bg-sky-50 font-bold flex items-center gap-1.5"
@@ -291,12 +293,12 @@ export default function App() {
 
                   {/* Listings Grid */}
                   {filteredListings.length === 0 ? (
-                    <div className="p-12 rounded-2xl bg-slate-900/40 border border-slate-800 text-center space-y-4">
-                      <div className="w-16 h-16 rounded-full bg-slate-800 text-slate-400 mx-auto flex items-center justify-center">
+                    <div className="p-12 rounded-2xl bg-white border border-slate-200 text-center space-y-4 shadow-sm">
+                      <div className="w-16 h-16 rounded-full bg-slate-100 text-slate-500 mx-auto flex items-center justify-center">
                         <Footprints size={32} />
                       </div>
-                      <h3 className="text-lg font-bold text-white">No Matching Accommodations Found</h3>
-                      <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                      <h3 className="text-lg font-extrabold text-slate-900">No Matching Accommodations Found</h3>
+                      <p className="text-xs text-slate-500 font-medium max-w-sm mx-auto">
                         Try adjusting your budget slider, distance radius, or clearing search filters to see more student rooms.
                       </p>
                       <button
@@ -306,7 +308,7 @@ export default function App() {
                           setSearchQuery('');
                           setSelectedUniversity('all');
                         }}
-                        className="btn btn-primary text-xs px-4 py-2"
+                        className="btn btn-primary text-xs px-4 py-2 font-bold"
                       >
                         Reset All Filters
                       </button>
@@ -320,8 +322,8 @@ export default function App() {
                           isSaved={savedIds.includes(listing.id)}
                           onToggleSave={handleToggleSave}
                           onSelectListing={(l) => setSelectedListing(l)}
-                          isCompared={compareIds.includes(listing.id)}
-                          onToggleCompare={handleToggleCompare}
+                          isCompared={userRole === 'student' && compareIds.includes(listing.id)}
+                          onToggleCompare={userRole === 'student' ? handleToggleCompare : null}
                         />
                       ))}
                     </div>
@@ -336,8 +338,8 @@ export default function App() {
 
       </main>
 
-      {/* Floating Side-by-Side Compare Sticky Bar */}
-      {compareIds.length > 0 && !isCompareModalOpen && (
+      {/* Floating Side-by-Side Compare Sticky Bar (Student Only) */}
+      {userRole === 'student' && compareIds.length > 0 && !isCompareModalOpen && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-white/95 backdrop-blur-xl border border-sky-400 p-3.5 px-6 rounded-2xl shadow-2xl flex items-center gap-4 animate-pop-in">
           <div className="flex items-center gap-2">
             <SlidersHorizontal size={18} className="text-sky-600" />
