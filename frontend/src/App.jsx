@@ -185,12 +185,12 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100 selection:bg-sky-500 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 selection:bg-sky-500 selection:text-white">
       
       {/* Header Navigation */}
       <Navbar
         userRole={userRole}
-        setUserRole={setUserRole}
+        onLogout={() => setIsAuthenticated(false)}
         selectedUniversity={selectedUniversity}
         setSelectedUniversity={setSelectedUniversity}
         savedIds={savedIds}
@@ -205,7 +205,8 @@ export default function App() {
       {/* Main Body */}
       <main className="flex-1">
         
-        {userRole === 'landlord' || activeTab === 'landlord' ? (
+        {userRole === 'landlord' ? (
+          /* HOUSE OWNER VIEW ONLY */
           <div className="app-container py-8">
             <LandlordDashboard
               listings={listings}
@@ -216,6 +217,7 @@ export default function App() {
             />
           </div>
         ) : activeTab === 'student-portal' ? (
+          /* STUDENT DASHBOARD VIEW */
           <div className="app-container py-8">
             <StudentDashboard
               savedListings={savedListings}
@@ -227,6 +229,7 @@ export default function App() {
             />
           </div>
         ) : (
+          /* STUDENT EXPLORER & SEARCH VIEW */
           <div>
             {/* Student Hero Banner */}
             <HeroSection
@@ -260,15 +263,15 @@ export default function App() {
                 <div className="lg:col-span-9 space-y-6">
                   
                   {/* Results Count & Sort Header */}
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl bg-slate-900/60 border border-slate-800/80">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4.5 rounded-2xl bg-white border border-slate-200 shadow-sm">
                     <div>
-                      <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                      <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                         <span>Available Student Accommodations</span>
-                        <span className="px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-400 text-xs font-semibold border border-sky-500/30">
+                        <span className="px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-700 text-xs font-bold border border-sky-200">
                           {filteredListings.length} Found
                         </span>
                       </h2>
-                      <p className="text-xs text-slate-400">
+                      <p className="text-xs text-slate-500 font-medium">
                         {selectedUniversity === 'all' 
                           ? 'Showing listings across all university campus areas' 
                           : `Filtered near ${UNIVERSITIES.find(u => u.id === selectedUniversity)?.name}`}
@@ -278,7 +281,7 @@ export default function App() {
                     {compareIds.length > 0 && (
                       <button
                         onClick={() => setIsCompareModalOpen(true)}
-                        className="btn btn-outline text-xs px-3 py-1.5 border-sky-500/40 text-sky-300 flex items-center gap-1.5"
+                        className="btn btn-outline text-xs px-3.5 py-2 border-sky-300 text-sky-700 hover:bg-sky-50 font-bold flex items-center gap-1.5"
                       >
                         <SlidersHorizontal size={14} />
                         <span>Compare ({compareIds.length}/3)</span>
@@ -335,15 +338,15 @@ export default function App() {
 
       {/* Floating Side-by-Side Compare Sticky Bar */}
       {compareIds.length > 0 && !isCompareModalOpen && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-slate-900/90 backdrop-blur-xl border border-sky-500/40 p-3 px-5 rounded-2xl shadow-2xl flex items-center gap-4 animate-pop-in">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-white/95 backdrop-blur-xl border border-sky-400 p-3.5 px-6 rounded-2xl shadow-2xl flex items-center gap-4 animate-pop-in">
           <div className="flex items-center gap-2">
-            <SlidersHorizontal size={18} className="text-sky-400" />
-            <span className="text-xs font-bold text-white">{compareIds.length} Accommodations Selected</span>
+            <SlidersHorizontal size={18} className="text-sky-600" />
+            <span className="text-xs font-bold text-slate-900">{compareIds.length} Accommodations Selected</span>
           </div>
 
           <button
             onClick={() => setIsCompareModalOpen(true)}
-            className="btn btn-primary text-xs px-3.5 py-1.5 font-bold shadow-md"
+            className="btn btn-primary text-xs px-4 py-2 font-bold shadow-md"
           >
             Compare Side-by-Side →
           </button>
@@ -353,37 +356,37 @@ export default function App() {
       {/* Bookmarks Drawer Modal */}
       {isBookmarksOpen && (
         <div className="modal-overlay animate-fade-in" onClick={() => setIsBookmarksOpen(false)}>
-          <div className="modal-content max-w-md" onClick={(e) => e.stopPropagation()}>
-            <div className="px-6 py-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+          <div className="modal-content max-w-md bg-white border border-slate-200" onClick={(e) => e.stopPropagation()}>
+            <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Heart size={18} className="text-rose-500 fill-rose-500" />
-                <h3 className="text-base font-bold text-white">Saved Accommodation Units</h3>
+                <h3 className="text-base font-bold text-slate-900">Saved Accommodation Units</h3>
               </div>
               <button
                 onClick={() => setIsBookmarksOpen(false)}
-                className="w-7 h-7 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center text-xs"
+                className="w-7 h-7 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center text-xs hover:bg-slate-300 font-bold"
               >
                 ✕
               </button>
             </div>
             <div className="p-4 space-y-3 max-h-96 overflow-y-auto">
               {savedListings.length === 0 ? (
-                <p className="text-xs text-slate-400 text-center py-6">No saved accommodations yet.</p>
+                <p className="text-xs text-slate-500 text-center py-6 font-medium">No saved accommodations yet.</p>
               ) : (
                 savedListings.map((l) => (
-                  <div key={l.id} className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-2">
+                  <div key={l.id} className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3">
                     <div>
-                      <h4 className="text-xs font-bold text-white">{l.title}</h4>
-                      <p className="text-[11px] text-sky-400 font-semibold">Rs. {l.monthlyRent.toLocaleString()}/mo</p>
+                      <h4 className="text-xs font-bold text-slate-900">{l.title}</h4>
+                      <p className="text-[11px] text-sky-700 font-extrabold">Rs. {l.monthlyRent.toLocaleString()}/mo</p>
                     </div>
                     <button
                       onClick={() => {
                         setIsBookmarksOpen(false);
                         setSelectedListing(l);
                       }}
-                      className="btn btn-primary text-[11px] px-2.5 py-1"
+                      className="btn btn-primary text-[11px] px-3 py-1.5 font-bold"
                     >
-                      View
+                      View Unit
                     </button>
                   </div>
                 ))

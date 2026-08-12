@@ -28,17 +28,17 @@ export default function FilterSidebar({
   };
 
   return (
-    <aside className="glass-panel p-5 space-y-6 sticky top-24 border-slate-800">
+    <aside className="bg-white p-5 space-y-6 sticky top-24 border border-slate-200 rounded-2xl shadow-sm">
       
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-        <div className="flex items-center gap-2 text-white font-bold text-base">
-          <Filter size={18} className="text-sky-400" />
+      <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+        <div className="flex items-center gap-2 text-slate-900 font-extrabold text-base">
+          <Filter size={18} className="text-sky-600" />
           <span>Refine Listings</span>
         </div>
         <button
           onClick={onReset}
-          className="text-xs text-slate-400 hover:text-sky-400 flex items-center gap-1 transition-colors"
+          className="text-xs text-slate-500 hover:text-sky-600 font-semibold flex items-center gap-1 transition-colors"
           title="Reset all filters"
         >
           <RotateCcw size={13} />
@@ -49,8 +49,8 @@ export default function FilterSidebar({
       {/* Budget Range Slider */}
       <div className="space-y-2">
         <div className="flex justify-between items-center text-xs">
-          <span className="text-slate-300 font-semibold">Max Monthly Rent:</span>
-          <span className="text-sky-400 font-bold text-sm">Rs. {filters.maxPrice.toLocaleString()}</span>
+          <span className="text-slate-700 font-bold">Max Monthly Rent:</span>
+          <span className="text-sky-700 font-extrabold text-sm">Rs. {filters.maxPrice.toLocaleString()}</span>
         </div>
         <input
           type="range"
@@ -59,9 +59,9 @@ export default function FilterSidebar({
           step="1000"
           value={filters.maxPrice}
           onChange={(e) => setFilters({ ...filters, maxPrice: Number(e.target.value) })}
-          className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-sky-400"
+          className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-sky-600"
         />
-        <div className="flex justify-between text-[11px] text-slate-500 font-mono">
+        <div className="flex justify-between text-[11px] text-slate-500 font-bold font-mono">
           <span>Rs. 10k</span>
           <span>Rs. 30k</span>
           <span>Rs. 50k</span>
@@ -70,7 +70,7 @@ export default function FilterSidebar({
 
       {/* Distance to Campus Radius */}
       <div className="space-y-2">
-        <label className="text-xs font-semibold text-slate-300 block">Distance to Main Campus:</label>
+        <label className="text-xs font-bold text-slate-700 block">Distance to Main Campus:</label>
         <div className="grid grid-cols-3 gap-1.5 text-xs">
           {[
             { id: 'all', label: 'Any' },
@@ -80,10 +80,10 @@ export default function FilterSidebar({
             <button
               key={item.id}
               onClick={() => setFilters({ ...filters, maxDistance: item.id })}
-              className={`py-1.5 px-2 rounded-lg font-medium border text-center transition-all ${
+              className={`py-1.5 px-2 rounded-xl font-bold border text-center transition-all ${
                 filters.maxDistance === item.id
-                  ? 'bg-sky-500/20 text-sky-300 border-sky-500/50 font-bold'
-                  : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200'
+                  ? 'bg-sky-50 text-sky-700 border-sky-400 shadow-sm'
+                  : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
               }`}
             >
               {item.label}
@@ -94,7 +94,7 @@ export default function FilterSidebar({
 
       {/* Property Type Checkboxes */}
       <div className="space-y-2">
-        <label className="text-xs font-semibold text-slate-300 block">Accommodation Type:</label>
+        <label className="text-xs font-bold text-slate-700 block">Accommodation Type:</label>
         <div className="space-y-1.5">
           {PROPERTY_TYPES.map((pt) => {
             const isSelected = filters.propertyTypes.includes(pt.id);
@@ -102,15 +102,15 @@ export default function FilterSidebar({
               <label
                 key={pt.id}
                 onClick={() => handlePropertyTypeToggle(pt.id)}
-                className={`flex items-center justify-between p-2 rounded-lg border text-xs cursor-pointer transition-all ${
+                className={`flex items-center justify-between p-2.5 rounded-xl border text-xs cursor-pointer transition-all ${
                   isSelected 
-                    ? 'bg-slate-800/80 border-sky-500/40 text-slate-100 font-semibold' 
-                    : 'bg-slate-900/40 border-slate-800/80 text-slate-400 hover:text-slate-200'
+                    ? 'bg-sky-50 border-sky-400 text-slate-900 font-bold shadow-sm' 
+                    : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
                 }`}
               >
                 <span>{pt.label}</span>
                 <div className={`w-4 h-4 rounded flex items-center justify-center border ${
-                  isSelected ? 'bg-sky-500 border-sky-500 text-white' : 'border-slate-700'
+                  isSelected ? 'bg-sky-600 border-sky-600 text-white' : 'border-slate-300 bg-white'
                 }`}>
                   {isSelected && <Check size={12} />}
                 </div>
@@ -122,7 +122,7 @@ export default function FilterSidebar({
 
       {/* Gender Preference */}
       <div className="space-y-2">
-        <label className="text-xs font-semibold text-slate-300 block">Gender Preference:</label>
+        <label className="text-xs font-bold text-slate-700 block">Gender Preference:</label>
         <div className="grid grid-cols-3 gap-1.5 text-xs">
           {[
             { id: 'all', label: 'All' },
@@ -132,10 +132,10 @@ export default function FilterSidebar({
             <button
               key={g.id}
               onClick={() => setFilters({ ...filters, genderPreference: g.id })}
-              className={`py-1.5 px-2 rounded-lg font-medium border text-center transition-all ${
+              className={`py-1.5 px-2 rounded-xl font-bold border text-center transition-all ${
                 filters.genderPreference === g.id
-                  ? 'bg-purple-500/20 text-purple-300 border-purple-500/50 font-bold'
-                  : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200'
+                  ? 'bg-purple-50 text-purple-700 border-purple-300 shadow-sm'
+                  : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
               }`}
             >
               {g.label}
@@ -146,18 +146,18 @@ export default function FilterSidebar({
 
       {/* Utility Bills Included */}
       <div className="space-y-2">
-        <label className="text-xs font-semibold text-slate-300 block">Bills Included Filter:</label>
+        <label className="text-xs font-bold text-slate-700 block">Bills Included Filter:</label>
         <label
           onClick={() => setFilters({ ...filters, billsIncludedOnly: !filters.billsIncludedOnly })}
-          className={`flex items-center justify-between p-2 rounded-lg border text-xs cursor-pointer transition-all ${
+          className={`flex items-center justify-between p-2.5 rounded-xl border text-xs cursor-pointer transition-all ${
             filters.billsIncludedOnly 
-              ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-300 font-semibold'
-              : 'bg-slate-900/40 border-slate-800 text-slate-400 hover:text-slate-200'
+              ? 'bg-emerald-50 border-emerald-400 text-emerald-800 font-bold shadow-sm'
+              : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
           }`}
         >
           <span>All Utility Bills Included</span>
           <div className={`w-4 h-4 rounded flex items-center justify-center border ${
-            filters.billsIncludedOnly ? 'bg-emerald-500 border-emerald-500 text-slate-950 font-bold' : 'border-slate-700'
+            filters.billsIncludedOnly ? 'bg-emerald-600 border-emerald-600 text-white font-bold' : 'border-slate-300 bg-white'
           }`}>
             {filters.billsIncludedOnly && <Check size={12} />}
           </div>
@@ -165,8 +165,8 @@ export default function FilterSidebar({
       </div>
 
       {/* Amenities Checklist */}
-      <div className="space-y-2 pt-2 border-t border-slate-800">
-        <label className="text-xs font-semibold text-slate-300 block">Required Amenities:</label>
+      <div className="space-y-2 pt-3 border-t border-slate-200">
+        <label className="text-xs font-bold text-slate-700 block">Required Amenities:</label>
         <div className="space-y-1 max-h-48 overflow-y-auto pr-1">
           {AMENITIES_LIST.map((am) => {
             const isSelected = filters.amenities.includes(am);
@@ -174,14 +174,14 @@ export default function FilterSidebar({
               <label
                 key={am}
                 onClick={() => handleAmenityToggle(am)}
-                className="flex items-center gap-2 p-1.5 rounded text-xs text-slate-300 hover:bg-slate-800/50 cursor-pointer"
+                className="flex items-center gap-2 p-1.5 rounded-lg text-xs text-slate-700 hover:bg-slate-100 cursor-pointer font-medium"
               >
                 <div className={`w-3.5 h-3.5 rounded flex items-center justify-center border ${
-                  isSelected ? 'bg-sky-500 border-sky-500 text-white' : 'border-slate-700'
+                  isSelected ? 'bg-sky-600 border-sky-600 text-white' : 'border-slate-300 bg-white'
                 }`}>
                   {isSelected && <Check size={10} />}
                 </div>
-                <span className={isSelected ? 'text-white font-medium' : 'text-slate-400'}>{am}</span>
+                <span className={isSelected ? 'text-slate-900 font-bold' : 'text-slate-600'}>{am}</span>
               </label>
             );
           })}
@@ -191,3 +191,4 @@ export default function FilterSidebar({
     </aside>
   );
 }
+

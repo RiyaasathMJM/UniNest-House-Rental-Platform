@@ -37,19 +37,19 @@ export default function BookingModal({
   return (
     <div className="modal-overlay animate-fade-in" onClick={onClose}>
       <div 
-        className="modal-content max-w-lg"
+        className="modal-content max-w-lg bg-white border border-slate-200 text-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
         
         {/* Header */}
-        <div className="sticky top-0 z-30 bg-slate-900 px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="sticky top-0 z-30 bg-slate-50/95 backdrop-blur-md px-6 py-4 border-b border-slate-200 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Calendar size={20} className="text-sky-400" />
-            <h2 className="text-base font-bold text-white">Student Accommodation Application</h2>
+            <Calendar size={20} className="text-sky-600" />
+            <h2 className="text-base font-extrabold text-slate-900">Student Accommodation Application</h2>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center"
+            className="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold flex items-center justify-center transition-colors"
           >
             <X size={18} />
           </button>
@@ -57,14 +57,14 @@ export default function BookingModal({
 
         {submitted ? (
           <div className="p-8 text-center space-y-4 animate-pop-in">
-            <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center">
+            <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center border border-emerald-200">
               <CheckCircle2 size={36} />
             </div>
-            <h3 className="text-xl font-bold text-white">Application Sent Successfully!</h3>
-            <p className="text-xs text-slate-300 max-w-xs mx-auto">
-              Your viewing request and student details have been dispatched to <span className="text-sky-400 font-semibold">{listing.landlord.name}</span>.
+            <h3 className="text-xl font-extrabold text-slate-900">Application Sent Successfully!</h3>
+            <p className="text-xs text-slate-600 max-w-xs mx-auto font-medium">
+              Your viewing request and student details have been dispatched to <span className="text-sky-700 font-bold">{listing.landlord.name}</span>.
             </p>
-            <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-400 font-mono">
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 font-mono font-bold">
               Listing: {listing.title}
             </div>
             <button
@@ -78,21 +78,21 @@ export default function BookingModal({
           <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs">
             
             {/* Listing Summary Box */}
-            <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
               <div>
-                <h4 className="font-bold text-white text-xs line-clamp-1">{listing.title}</h4>
-                <p className="text-[11px] text-slate-400">Rs. {listing.monthlyRent.toLocaleString()} / month</p>
+                <h4 className="font-extrabold text-slate-900 text-xs line-clamp-1">{listing.title}</h4>
+                <p className="text-[11px] text-sky-700 font-bold">Rs. {listing.monthlyRent.toLocaleString()} / month</p>
               </div>
               <span className="badge badge-verified text-[10px]">Owner: {listing.landlord.name}</span>
             </div>
 
             {/* Application Type */}
             <div className="space-y-1">
-              <label className="text-slate-300 font-semibold block">Request Type:</label>
+              <label className="text-slate-700 font-bold block">Request Type:</label>
               <select
                 value={formData.requestType}
                 onChange={(e) => setFormData({ ...formData, requestType: e.target.value })}
-                className="input-control text-xs"
+                className="input-control text-xs bg-slate-50 text-slate-900 border-slate-300 font-medium"
               >
                 <option value="Viewing & Rental Application">Schedule Viewing + Submit Rental Application</option>
                 <option value="In-Person Viewing Only">Schedule In-Person Viewing Only</option>
@@ -102,15 +102,15 @@ export default function BookingModal({
 
             {/* Student Name */}
             <div className="space-y-1">
-              <label className="text-slate-300 font-semibold block">Student Full Name *</label>
+              <label className="text-slate-700 font-bold block">Student Full Name *</label>
               <div className="relative">
-                <User size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <User size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 z-10" />
                 <input
                   type="text"
                   required
                   value={formData.studentName}
                   onChange={(e) => setFormData({ ...formData, studentName: e.target.value })}
-                  className="input-control pl-9 text-xs"
+                  className="input-control pl-9 text-xs bg-slate-50 text-slate-900 border-slate-300 font-medium"
                 />
               </div>
             </div>
@@ -118,24 +118,24 @@ export default function BookingModal({
             {/* University & ID */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="text-slate-300 font-semibold block">University & Faculty *</label>
+                <label className="text-slate-700 font-bold block">University & Faculty *</label>
                 <input
                   type="text"
                   required
                   value={formData.faculty}
                   onChange={(e) => setFormData({ ...formData, faculty: e.target.value })}
-                  className="input-control text-xs"
+                  className="input-control text-xs bg-slate-50 text-slate-900 border-slate-300 font-medium"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-slate-300 font-semibold block">Student ID / Reg No. *</label>
+                <label className="text-slate-700 font-bold block">Student ID / Reg No. *</label>
                 <input
                   type="text"
                   required
                   value={formData.studentIdNum}
                   onChange={(e) => setFormData({ ...formData, studentIdNum: e.target.value })}
-                  className="input-control text-xs"
+                  className="input-control text-xs bg-slate-50 text-slate-900 border-slate-300 font-medium"
                 />
               </div>
             </div>
@@ -143,39 +143,39 @@ export default function BookingModal({
             {/* Contact Details */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="text-slate-300 font-semibold block">Phone Number *</label>
+                <label className="text-slate-700 font-bold block">Phone Number *</label>
                 <div className="relative">
-                  <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 z-10" />
                   <input
                     type="text"
                     required
                     value={formData.studentPhone}
                     onChange={(e) => setFormData({ ...formData, studentPhone: e.target.value })}
-                    className="input-control pl-9 text-xs"
+                    className="input-control pl-9 text-xs bg-slate-50 text-slate-900 border-slate-300 font-medium"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-slate-300 font-semibold block">Preferred Move-in Date *</label>
+                <label className="text-slate-700 font-bold block">Preferred Move-in Date *</label>
                 <input
                   type="date"
                   required
                   value={formData.moveInDate}
                   onChange={(e) => setFormData({ ...formData, moveInDate: e.target.value })}
-                  className="input-control text-xs"
+                  className="input-control text-xs bg-slate-50 text-slate-900 border-slate-300 font-medium"
                 />
               </div>
             </div>
 
             {/* Notes */}
             <div className="space-y-1">
-              <label className="text-slate-300 font-semibold block">Notes to Landlord / House Owner</label>
+              <label className="text-slate-700 font-bold block">Notes to Landlord / House Owner</label>
               <textarea
                 rows="3"
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                className="input-control text-xs"
+                className="input-control text-xs bg-slate-50 text-slate-900 border-slate-300 font-medium"
                 placeholder="Mention preferred quiet hours, move-in duration, or special requests..."
               />
             </div>
@@ -195,3 +195,4 @@ export default function BookingModal({
     </div>
   );
 }
+

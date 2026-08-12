@@ -70,26 +70,26 @@ export default function AddListingModal({
   return (
     <div className="modal-overlay animate-fade-in" onClick={onClose}>
       <div 
-        className="modal-content max-w-2xl"
+        className="modal-content max-w-2xl bg-white border border-slate-200 text-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
         
         {/* Header */}
-        <div className="px-6 py-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 bg-slate-50/95 backdrop-blur-md border-b border-slate-200 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Building2 size={20} className="text-emerald-400" />
-            <h2 className="text-base font-bold text-white">Post New Student Accommodation</h2>
+            <Building2 size={20} className="text-emerald-600" />
+            <h2 className="text-base font-extrabold text-slate-900">Post New Student Accommodation</h2>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center text-xs"
+            className="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold flex items-center justify-center text-xs transition-colors"
           >
             <X size={18} />
           </button>
         </div>
 
         {/* Wizard Steps Tracker */}
-        <div className="px-6 py-3 bg-slate-950/60 border-b border-slate-800/80 flex items-center justify-between text-xs font-semibold">
+        <div className="px-6 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs font-bold">
           {[
             { num: 1, label: '1. Basic Info' },
             { num: 2, label: '2. Location' },
@@ -100,7 +100,7 @@ export default function AddListingModal({
               key={s.num}
               onClick={() => setStep(s.num)}
               className={`pb-1 transition-colors ${
-                step === s.num ? 'text-emerald-400 border-b-2 border-emerald-400 font-bold' : 'text-slate-500'
+                step === s.num ? 'text-emerald-700 border-b-2 border-emerald-600 font-extrabold' : 'text-slate-500'
               }`}
             >
               {s.label}
@@ -114,24 +114,24 @@ export default function AddListingModal({
           {step === 1 && (
             <div className="space-y-4 animate-fade-in">
               <div className="space-y-1">
-                <label className="text-slate-300 font-semibold block">Listing Title *</label>
+                <label className="text-slate-700 font-bold block">Listing Title *</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Modern Annex Room near UCSC Gate"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="input-control text-xs"
+                  className="input-control text-xs bg-slate-50 text-slate-900 border-slate-300 font-medium"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-semibold block">Property Type *</label>
+                  <label className="text-slate-700 font-bold block">Property Type *</label>
                   <select
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                    className="input-control text-xs"
+                    className="input-control text-xs bg-slate-50 text-slate-900 border-slate-300 font-medium"
                   >
                     {PROPERTY_TYPES.map(pt => (
                       <option key={pt.id} value={pt.id}>{pt.label}</option>
@@ -140,11 +140,11 @@ export default function AddListingModal({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-semibold block">Gender Preference *</label>
+                  <label className="text-slate-700 font-bold block">Gender Preference *</label>
                   <select
                     value={formData.genderPreference}
                     onChange={(e) => setFormData({ ...formData, genderPreference: e.target.value })}
-                    className="input-control text-xs"
+                    className="input-control text-xs bg-slate-50 text-slate-900 border-slate-300 font-medium"
                   >
                     <option value="Any">Any Student</option>
                     <option value="Boys Only">Boys Only</option>
@@ -154,14 +154,14 @@ export default function AddListingModal({
               </div>
 
               <div className="space-y-1">
-                <label className="text-slate-300 font-semibold block">Detailed Description *</label>
+                <label className="text-slate-700 font-bold block">Detailed Description *</label>
                 <textarea
                   rows="4"
                   required
                   placeholder="Describe room condition, study desk size, ventilation, and nearby conveniences..."
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="input-control text-xs"
+                  className="input-control text-xs bg-slate-50 text-slate-900 border-slate-300 font-medium"
                 />
               </div>
 
@@ -179,11 +179,11 @@ export default function AddListingModal({
           {step === 2 && (
             <div className="space-y-4 animate-fade-in">
               <div className="space-y-1">
-                <label className="text-slate-300 font-semibold block">Target University Campus *</label>
+                <label className="text-slate-700 font-bold block">Target University Campus *</label>
                 <select
                   value={formData.universityId}
                   onChange={(e) => setFormData({ ...formData, universityId: e.target.value })}
-                  className="input-control text-xs"
+                  className="input-control text-xs bg-slate-50 text-slate-900 border-slate-300 font-medium"
                 >
                   {UNIVERSITIES.map(u => (
                     <option key={u.id} value={u.id}>{u.name} ({u.code})</option>
@@ -192,32 +192,32 @@ export default function AddListingModal({
               </div>
 
               <div className="space-y-1">
-                <label className="text-slate-300 font-semibold block">Full Street Address *</label>
+                <label className="text-slate-700 font-bold block">Full Street Address (Used for Google Maps) *</label>
                 <input
                   type="text"
                   required
                   placeholder="No, Street Name, Town"
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  className="input-control text-xs"
+                  className="input-control text-xs bg-slate-50 text-slate-900 border-slate-300 font-medium"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-semibold block">Nearest Faculty / Gate *</label>
+                  <label className="text-slate-700 font-bold block">Nearest Faculty / Gate *</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. UCSC Gate or Engineering Faculty"
                     value={formData.nearbyFaculty}
                     onChange={(e) => setFormData({ ...formData, nearbyFaculty: e.target.value })}
-                    className="input-control text-xs"
+                    className="input-control text-xs bg-slate-50 text-slate-900 border-slate-300 font-medium"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-semibold block">Walking Minutes *</label>
+                  <label className="text-slate-700 font-bold block">Walking Minutes *</label>
                   <input
                     type="number"
                     min="1"
@@ -225,7 +225,7 @@ export default function AddListingModal({
                     required
                     value={formData.walkingTimeMinutes}
                     onChange={(e) => setFormData({ ...formData, walkingTimeMinutes: e.target.value })}
-                    className="input-control text-xs"
+                    className="input-control text-xs bg-slate-50 text-slate-900 border-slate-300 font-medium"
                   />
                 </div>
               </div>
@@ -234,7 +234,7 @@ export default function AddListingModal({
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="btn btn-outline flex-1 py-2.5"
+                  className="btn btn-outline flex-1 py-2.5 font-bold border-slate-300 text-slate-700"
                 >
                   ← Back
                 </button>
@@ -254,33 +254,33 @@ export default function AddListingModal({
             <div className="space-y-4 animate-fade-in">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-semibold block">Monthly Rent (LKR) *</label>
+                  <label className="text-slate-700 font-bold block">Monthly Rent (LKR) *</label>
                   <input
                     type="number"
                     required
                     value={formData.monthlyRent}
                     onChange={(e) => setFormData({ ...formData, monthlyRent: e.target.value })}
-                    className="input-control text-xs font-bold text-sky-400"
+                    className="input-control text-xs font-bold text-sky-700 bg-slate-50 border-slate-300"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-semibold block">Security Deposit (LKR) *</label>
+                  <label className="text-slate-700 font-bold block">Security Deposit (LKR) *</label>
                   <input
                     type="number"
                     required
                     value={formData.securityDeposit}
                     onChange={(e) => setFormData({ ...formData, securityDeposit: e.target.value })}
-                    className="input-control text-xs font-semibold"
+                    className="input-control text-xs font-bold bg-slate-50 text-slate-900 border-slate-300"
                   />
                 </div>
               </div>
 
               {/* Bills Inclusion Toggles */}
-              <div className="space-y-2 p-3 rounded-xl bg-slate-900 border border-slate-800">
-                <label className="text-slate-200 font-bold block">Included Utility Bills:</label>
+              <div className="space-y-2 p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                <label className="text-slate-900 font-extrabold block">Included Utility Bills:</label>
                 
-                <label className="flex items-center justify-between p-2 rounded bg-slate-950 border border-slate-800 cursor-pointer">
+                <label className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-slate-200 cursor-pointer font-medium text-slate-800">
                   <span>High-Speed Wi-Fi Included</span>
                   <input
                     type="checkbox"
@@ -289,11 +289,11 @@ export default function AddListingModal({
                       ...formData,
                       billsIncluded: { ...formData.billsIncluded, wifi: e.target.checked }
                     })}
-                    className="accent-emerald-500"
+                    className="accent-emerald-600 w-4 h-4"
                   />
                 </label>
 
-                <label className="flex items-center justify-between p-2 rounded bg-slate-950 border border-slate-800 cursor-pointer">
+                <label className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-slate-200 cursor-pointer font-medium text-slate-800">
                   <span>Water Bill Included</span>
                   <input
                     type="checkbox"
@@ -302,11 +302,11 @@ export default function AddListingModal({
                       ...formData,
                       billsIncluded: { ...formData.billsIncluded, water: e.target.checked }
                     })}
-                    className="accent-emerald-500"
+                    className="accent-emerald-600 w-4 h-4"
                   />
                 </label>
 
-                <label className="flex items-center justify-between p-2 rounded bg-slate-950 border border-slate-800 cursor-pointer">
+                <label className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-slate-200 cursor-pointer font-medium text-slate-800">
                   <span>Electricity Bill Included</span>
                   <input
                     type="checkbox"
@@ -315,7 +315,7 @@ export default function AddListingModal({
                       ...formData,
                       billsIncluded: { ...formData.billsIncluded, electricity: e.target.checked }
                     })}
-                    className="accent-emerald-500"
+                    className="accent-emerald-600 w-4 h-4"
                   />
                 </label>
               </div>
@@ -324,7 +324,7 @@ export default function AddListingModal({
                 <button
                   type="button"
                   onClick={() => setStep(2)}
-                  className="btn btn-outline flex-1 py-2.5"
+                  className="btn btn-outline flex-1 py-2.5 font-bold border-slate-300 text-slate-700"
                 >
                   ← Back
                 </button>
@@ -343,18 +343,18 @@ export default function AddListingModal({
           {step === 4 && (
             <div className="space-y-4 animate-fade-in">
               <div className="space-y-1">
-                <label className="text-slate-300 font-semibold block">Accommodation Photo URL *</label>
+                <label className="text-slate-700 font-bold block">Accommodation Photo URL *</label>
                 <input
                   type="text"
                   required
                   value={formData.imageUrl}
                   onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                  className="input-control text-xs font-mono"
+                  className="input-control text-xs font-mono bg-slate-50 text-slate-900 border-slate-300"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-slate-300 font-semibold block">Select Facilities & Amenities:</label>
+                <label className="text-slate-700 font-bold block">Select Facilities & Amenities:</label>
                 <div className="grid grid-cols-2 gap-1.5 max-h-40 overflow-y-auto pr-1">
                   {AMENITIES_LIST.map((am) => {
                     const selected = formData.amenities.includes(am);
@@ -362,12 +362,12 @@ export default function AddListingModal({
                       <label
                         key={am}
                         onClick={() => handleAmenityToggle(am)}
-                        className={`p-2 rounded border cursor-pointer text-xs flex items-center justify-between ${
-                          selected ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300 font-bold' : 'bg-slate-900 border-slate-800 text-slate-400'
+                        className={`p-2.5 rounded-xl border cursor-pointer text-xs flex items-center justify-between font-bold ${
+                          selected ? 'bg-emerald-50 border-emerald-300 text-emerald-800 shadow-sm' : 'bg-slate-50 border-slate-200 text-slate-600'
                         }`}
                       >
                         <span>{am}</span>
-                        {selected && <Check size={12} />}
+                        {selected && <Check size={12} className="text-emerald-700" />}
                       </label>
                     );
                   })}
@@ -378,13 +378,13 @@ export default function AddListingModal({
                 <button
                   type="button"
                   onClick={() => setStep(3)}
-                  className="btn btn-outline flex-1 py-2.5"
+                  className="btn btn-outline flex-1 py-2.5 font-bold border-slate-300 text-slate-700"
                 >
                   ← Back
                 </button>
                 <button
                   type="submit"
-                  className="btn btn-accent flex-1 py-2.5 font-bold shadow-lg shadow-emerald-500/20"
+                  className="btn btn-accent flex-1 py-2.5 font-bold shadow-md shadow-emerald-600/20"
                 >
                   Publish Listing Now ✨
                 </button>
@@ -398,3 +398,4 @@ export default function AddListingModal({
     </div>
   );
 }
+
