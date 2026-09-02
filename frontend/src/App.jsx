@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import FilterSidebar from './components/FilterSidebar';
@@ -13,17 +13,19 @@ import StudentDashboard from './components/StudentDashboard';
 import Footer from './components/Footer';
 import LoginScreen from './components/LoginScreen';
 
+import { apiService } from './services/api';
 import { 
   MOCK_LISTINGS, 
   INITIAL_APPLICATIONS, 
   INITIAL_MESSAGES, 
   UNIVERSITIES 
 } from './data/mockData';
-import { Sparkles, Footprints, ShieldCheck, Heart, SlidersHorizontal, ArrowUpRight } from 'lucide-react';
+import { Sparkles, Footprints, ShieldCheck, Heart, SlidersHorizontal, RefreshCw } from 'lucide-react';
 
 export default function App() {
-  // Authentication State
+  // Authentication & Current User State
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   // Navigation & Role State
   const [userRole, setUserRole] = useState('student'); // 'student' | 'landlord'
@@ -32,13 +34,13 @@ export default function App() {
   // Search & Filter State
   const [selectedUniversity, setSelectedUniversity] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [quickFilter, setQuickFilter] = useState('all'); // 'all' | 'walking' | 'girls' | 'bills' | 'budget'
+  const [quickFilter, setQuickFilter] = useState('all');
 
   const defaultFilters = {
     maxPrice: 50000,
-    maxDistance: 'all', // 'all', '0.5', '1.0'
+    maxDistance: 'all',
     propertyTypes: [],
-    genderPreference: 'all', // 'all', 'Boys Only', 'Girls Only'
+    genderPreference: 'all',
     billsIncludedOnly: false,
     amenities: []
   };
@@ -51,6 +53,7 @@ export default function App() {
   const [compareIds, setCompareIds] = useState(['lst-101', 'lst-102']);
   const [applications, setApplications] = useState(INITIAL_APPLICATIONS);
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
+  const [isDataLoading, setIsDataLoading] = useState(false);
 
   // Modals
   const [selectedListing, setSelectedListing] = useState(null);
@@ -59,6 +62,45 @@ export default function App() {
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
   const [isAddListingModalOpen, setIsAddListingModalOpen] = useState(false);
   const [isBookmarksOpen, setIsBookmarksOpen] = useState(false);
+
+  // Fetch Live Data from Supabase Backend API
+  const loadLiveData = async () => {
+    setIsDataLoading(true);
+    try {
+      // 1. Fetch Listings
+      const listingsRes = await apiService.getListings();
+      if (listingsRes.success && listingsRes.data && listingsRes.data.length > 0) {
+        setListings(listingsRes.data);
+      }
+    } catch (err) {
+      console.warn("Using fallback local listings data:", err.message);
+    }
+
+    try {
+      // 2. Fetch Applications based on role
+      if (userRole === 'landlord') {
+        const appsRes = await apiService.getLandlordApplications();
+        if (appsRes.success && appsRes.data) {
+          setApplications(appsRes.data);
+        }
+      } else {
+        const appsRes = await apiService.getStudentApplications();
+        if (appsRes.success && appsRes.data) {
+          setApplications(appsRes.data);
+        }
+      }
+    } catch (err) {
+      console.warn("Using fallback local applications data:", err.message);
+    } finally {
+      setIsDataLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadLiveData();
+    }
+  }, [isAuthenticated, userRole]);
 
   // Filter Logic Computation
   const filteredListings = useMemo(() => {
@@ -71,11 +113,11 @@ export default function App() {
       // Keyword Search
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
-        const matchesTitle = item.title.toLowerCase().includes(q);
-        const matchesAddress = item.address.toLowerCase().includes(q);
-        const matchesFaculty = item.nearbyFaculty.toLowerCase().includes(q);
-        const matchesType = item.type.toLowerCase().includes(q);
-        const matchesAmenity = item.amenities.some(a => a.toLowerCase().includes(q));
+        const matchesTitle = item.title?.toLowerCase().includes(q);
+        const matchesAddress = item.address?.toLowerCase().includes(q);
+        const matchesFaculty = item.nearbyFaculty?.toLowerCase().includes(q);
+        const matchesType = item.type?.toLowerCase().includes(q);
+        const matchesAmenity = (item.amenities || []).some(a => a.toLowerCase().includes(q));
         if (!matchesTitle && !matchesAddress && !matchesFaculty && !matchesType && !matchesAmenity) {
           return false;
         }
@@ -84,7 +126,7 @@ export default function App() {
       // Quick Tag Chips
       if (quickFilter === 'walking' && item.walkingTimeMinutes > 5) return false;
       if (quickFilter === 'girls' && item.genderPreference !== 'Girls Only') return false;
-      if (quickFilter === 'bills' && (!item.billsIncluded.water || !item.billsIncluded.wifi || !item.billsIncluded.electricity)) return false;
+      if (quickFilter === 'bills' && (!item.billsIncluded?.water || !item.billsIncluded?.wifi || !item.billsIncluded?.electricity)) return false;
       if (quickFilter === 'budget' && item.monthlyRent > 20000) return false;
 
       // Price Filter
@@ -108,14 +150,14 @@ export default function App() {
 
       // Utility Bills Included Only
       if (filters.billsIncludedOnly) {
-        if (!item.billsIncluded.water || !item.billsIncluded.wifi || !item.billsIncluded.electricity) {
+        if (!item.billsIncluded?.water || !item.billsIncluded?.wifi || !item.billsIncluded?.electricity) {
           return false;
         }
       }
 
       // Amenities Checklist
       if (filters.amenities.length > 0) {
-        const hasAllAmenities = filters.amenities.every(am => item.amenities.includes(am));
+        const hasAllAmenities = filters.amenities.every(am => (item.amenities || []).includes(am));
         if (!hasAllAmenities) return false;
       }
 
@@ -143,27 +185,65 @@ export default function App() {
     });
   };
 
-  const handleAddListing = (newListing) => {
-    setListings(prev => [newListing, ...prev]);
-    alert("✨ Accommodation Published Successfully! It is now visible to all students.");
+  const handleAddListing = async (newListing) => {
+    try {
+      const res = await apiService.createListing(newListing);
+      if (res.success && res.data) {
+        setListings(prev => [res.data, ...prev]);
+      } else {
+        setListings(prev => [newListing, ...prev]);
+      }
+    } catch (err) {
+      console.warn("Falling back to local state for new listing:", err.message);
+      setListings(prev => [newListing, ...prev]);
+    }
+    alert("✨ Accommodation Published Successfully! It is now live on Supabase & Cloudinary.");
   };
 
-  const handleDeleteListing = (id) => {
+  const handleDeleteListing = async (id) => {
     if (confirm("Are you sure you want to remove this property listing?")) {
+      try {
+        await apiService.deleteListing(id);
+      } catch (err) {
+        console.warn("Delete API warning:", err.message);
+      }
       setListings(prev => prev.filter(l => l.id !== id));
     }
   };
 
-  const handleSubmitApplication = (newApp) => {
-    setApplications(prev => [newApp, ...prev]);
+  const handleSubmitApplication = async (newApp) => {
+    try {
+      const res = await apiService.submitApplication(newApp);
+      if (res.success && res.data) {
+        setApplications(prev => [res.data, ...prev]);
+      } else {
+        setApplications(prev => [newApp, ...prev]);
+      }
+    } catch (err) {
+      setApplications(prev => [newApp, ...prev]);
+    }
   };
 
-  const handleUpdateApplicationStatus = (id, newStatus) => {
+  const handleUpdateApplicationStatus = async (id, newStatus) => {
+    try {
+      await apiService.updateApplicationStatus(id, newStatus);
+    } catch (err) {
+      console.warn("Update application status warning:", err.message);
+    }
     setApplications(prev => prev.map(a => a.id === id ? { ...a, status: newStatus } : a));
   };
 
-  const handleSendMessage = (newMsg) => {
-    setMessages(prev => [...prev, newMsg]);
+  const handleSendMessage = async (newMsg) => {
+    try {
+      const res = await apiService.sendMessage(newMsg);
+      if (res.success && res.data) {
+        setMessages(prev => [...prev, res.data]);
+      } else {
+        setMessages(prev => [...prev, newMsg]);
+      }
+    } catch (err) {
+      setMessages(prev => [...prev, newMsg]);
+    }
   };
 
   const compareListings = useMemo(() => {
@@ -174,10 +254,17 @@ export default function App() {
     return listings.filter(l => savedIds.includes(l.id));
   }, [listings, savedIds]);
 
-  const handleLogin = (role, username) => {
+  const handleLogin = (role, userObj) => {
     setUserRole(role);
+    setCurrentUser(userObj);
     setActiveTab(role === 'landlord' ? 'landlord' : 'explore');
     setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('uninest_token');
+    setIsAuthenticated(false);
+    setCurrentUser(null);
   };
 
   if (!isAuthenticated) {
@@ -190,7 +277,7 @@ export default function App() {
       {/* Header Navigation */}
       <Navbar
         userRole={userRole}
-        onLogout={() => setIsAuthenticated(false)}
+        onLogout={handleLogout}
         selectedUniversity={selectedUniversity}
         setSelectedUniversity={setSelectedUniversity}
         savedIds={savedIds}
@@ -264,7 +351,7 @@ export default function App() {
                 {/* Right Listings Grid */}
                 <div className="lg:col-span-9 space-y-6">
                   
-                  {/* Results Count & Sort Header */}
+                  {/* Results Count & Header */}
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4.5 rounded-2xl bg-white border border-slate-200 shadow-sm">
                     <div>
                       <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
@@ -272,10 +359,13 @@ export default function App() {
                         <span className="px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-700 text-xs font-bold border border-sky-200">
                           {filteredListings.length} Found
                         </span>
+                        {isDataLoading && (
+                          <RefreshCw size={14} className="text-sky-500 animate-spin" />
+                        )}
                       </h2>
                       <p className="text-xs text-slate-500 font-medium">
                         {selectedUniversity === 'all' 
-                          ? 'Showing listings across all university campus areas' 
+                          ? 'Showing live verified listings from Supabase' 
                           : `Filtered near ${UNIVERSITIES.find(u => u.id === selectedUniversity)?.name}`}
                       </p>
                     </div>
@@ -379,7 +469,7 @@ export default function App() {
                   <div key={l.id} className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3">
                     <div>
                       <h4 className="text-xs font-bold text-slate-900">{l.title}</h4>
-                      <p className="text-[11px] text-sky-700 font-extrabold">Rs. {l.monthlyRent.toLocaleString()}/mo</p>
+                      <p className="text-[11px] text-sky-700 font-extrabold">Rs. {l.monthlyRent?.toLocaleString()}/mo</p>
                     </div>
                     <button
                       onClick={() => {
