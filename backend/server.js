@@ -54,9 +54,11 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Server entry point
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`🚀 UniNest Backend Server running on http://localhost:${PORT}`);
   console.log(`📡 Health Check: http://localhost:${PORT}/api/health`);
 });
+

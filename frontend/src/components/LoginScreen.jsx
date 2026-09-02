@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GraduationCap, Home, ArrowRight, ShieldCheck, User, Lock, Eye, EyeOff, KeyRound, Mail, Phone, School, IdCard, UserPlus, LogIn } from 'lucide-react';
+import { GraduationCap, Home, ArrowRight, ShieldCheck, User, Lock, Eye, EyeOff, KeyRound, Mail, Phone, School, UserPlus, LogIn } from 'lucide-react';
 import { apiService } from '../services/api';
 import { UNIVERSITIES } from '../data/mockData';
 
@@ -44,48 +44,78 @@ export default function LoginScreen({ onLogin }) {
 
     try {
       if (mode === 'login') {
-        if (!email.trim() || !password.trim()) {
+        const cleanEmail = email.trim().toLowerCase();
+        const cleanPassword = password.trim();
+
+        if (!cleanEmail || !cleanPassword) {
           setError('Please enter both email and password.');
           setIsLoading(false);
           return;
         }
 
         let userData = null;
+        let isBackendAuthenticated = false;
+
         try {
-          // Attempt Live Supabase Backend Login
-          const res = await apiService.login(email.trim(), password);
-          if (res.success) {
+          // Attempt Live Backend API Login
+          const res = await apiService.login(cleanEmail, cleanPassword);
+          if (res && res.success) {
             localStorage.setItem('uninest_token', res.token);
             userData = res.user;
+            isBackendAuthenticated = true;
           }
         } catch (apiErr) {
-          console.warn('Backend API login fallback:', apiErr.message);
-          // Fallback to local authentication for seamless demo experience
-          if (email.includes('owner') || role === 'landlord') {
+          console.warn('Backend API login offline/failed, validating against demo & local store:', apiErr.message);
+        }
+
+        if (!isBackendAuthenticated) {
+          // Validate against official demo accounts
+          if (cleanEmail === 'student@uninest.lk' && cleanPassword === 'student123') {
+            userData = {
+              id: 'student-demo-1',
+              name: 'Student Demo',
+              email: 'student@uninest.lk',
+              role: 'student',
+              phone: '+94 71 999 8888',
+              university: university || 'University of Colombo',
+              faculty: faculty || 'Faculty of Science'
+            };
+          } else if (cleanEmail === 'owner@uninest.lk' && cleanPassword === 'owner123') {
             userData = {
               id: 'owner-demo-1',
               name: 'House Owner Demo',
-              email,
+              email: 'owner@uninest.lk',
               role: 'landlord',
               phone: '+94 77 123 4567'
             };
           } else {
-            userData = {
-              id: 'student-demo-1',
-              name: 'Student Demo',
-              email,
-              role: 'student',
-              phone: '+94 71 999 8888',
-              university,
-              faculty
-            };
+            // Check locally registered accounts in localStorage
+            const localUsers = JSON.parse(localStorage.getItem('uninest_registered_users') || '[]');
+            const foundUser = localUsers.find(
+              u => u.email.toLowerCase() === cleanEmail && u.password === cleanPassword
+            );
+
+            if (foundUser) {
+              userData = foundUser;
+            }
           }
         }
 
-        onLogin(userData.role || role, userData);
+        // If credentials could not be verified
+        if (!userData) {
+          setError('Invalid email or password. Please check your credentials or use the Quick Fill demo buttons.');
+          setIsLoading(false);
+          return;
+        }
+
+        setSuccess('✨ Login successful! Redirecting...');
+        setTimeout(() => {
+          onLogin(userData.role || role, userData);
+        }, 500);
       } else {
         // Register Mode
-        if (!fullName.trim() || !email.trim() || !password.trim()) {
+        const cleanEmail = email.trim().toLowerCase();
+        if (!fullName.trim() || !cleanEmail || !password.trim()) {
           setError('Please fill in all required registration fields.');
           setIsLoading(false);
           return;
@@ -97,9 +127,18 @@ export default function LoginScreen({ onLogin }) {
           return;
         }
 
+        // Check if email already registered locally
+        const localUsers = JSON.parse(localStorage.getItem('uninest_registered_users') || '[]');
+        const existingLocal = localUsers.find(u => u.email.toLowerCase() === cleanEmail);
+        if (existingLocal) {
+          setError('An account with this email address already exists. Please log in instead.');
+          setIsLoading(false);
+          return;
+        }
+
         const registrationPayload = {
           name: fullName.trim(),
-          email: email.trim(),
+          email: cleanEmail,
           password,
           role,
           phone: phone.trim() || '+94 77 000 0000',
@@ -110,31 +149,36 @@ export default function LoginScreen({ onLogin }) {
 
         let userData = null;
         try {
-          // Register user via Supabase Backend API
+          // Register user via Backend API
           const res = await apiService.register(registrationPayload);
-          if (res.success) {
+          if (res && res.success) {
             localStorage.setItem('uninest_token', res.token);
             userData = res.user;
-            setSuccess('✨ Account created successfully! Logging you in...');
           }
         } catch (apiErr) {
-          console.warn('Backend registration API fallback:', apiErr.message);
-          // Fallback to client-side user object
+          console.warn('Backend registration API offline, saving locally:', apiErr.message);
+        }
+
+        if (!userData) {
           userData = {
             id: `usr-${Date.now()}`,
             name: fullName.trim(),
-            email: email.trim(),
+            email: cleanEmail,
+            password,
             role,
-            phone,
-            university,
-            faculty,
-            studentIdNum
+            phone: phone.trim() || '+94 77 000 0000',
+            university: role === 'student' ? university : '',
+            faculty: role === 'student' ? faculty : '',
+            studentIdNum: role === 'student' ? studentIdNum.trim() : ''
           };
-          setSuccess('✨ Account created successfully!');
+          // Save to local storage for persistent mock authentication
+          localUsers.push(userData);
+          localStorage.setItem('uninest_registered_users', JSON.stringify(localUsers));
         }
 
+        setSuccess('✨ Account created successfully! Logging you in...');
         setTimeout(() => {
-          onLogin(role, userData);
+          onLogin(userData.role || role, userData);
         }, 800);
       }
     } catch (err) {
@@ -152,7 +196,7 @@ export default function LoginScreen({ onLogin }) {
 
       {/* Main Container */}
       <div className="relative z-10 w-full max-w-md animate-fade-in space-y-6">
-        
+
         {/* Header Branding */}
         <div className="text-center space-y-2">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-emerald-500 mb-2 shadow-lg shadow-sky-500/20 text-white">
@@ -162,25 +206,24 @@ export default function LoginScreen({ onLogin }) {
             Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-emerald-600">UniNest</span>
           </h1>
           <p className="text-slate-600 text-sm font-medium">
-            {mode === 'login' 
-              ? 'Sign in to access verified student housing & listings' 
+            {mode === 'login'
+              ? 'Sign in to access verified student housing & listings'
               : 'Create an account to start browsing or hosting student accommodation'}
           </p>
         </div>
 
         {/* Form Card */}
         <div className="bg-white p-7 rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/50 space-y-5">
-          
+
           {/* Mode Switcher: Sign In vs Create Account */}
           <div className="grid grid-cols-2 gap-1 p-1 bg-slate-100 rounded-xl">
             <button
               type="button"
               onClick={() => { setMode('login'); setError(''); setSuccess(''); }}
-              className={`py-2 px-3 rounded-lg text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all ${
-                mode === 'login'
+              className={`py-2 px-3 rounded-lg text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all ${mode === 'login'
                   ? 'bg-white text-slate-900 shadow-sm border border-slate-200'
                   : 'text-slate-600 hover:text-slate-900 font-bold'
-              }`}
+                }`}
             >
               <LogIn size={15} />
               <span>Sign In</span>
@@ -189,11 +232,10 @@ export default function LoginScreen({ onLogin }) {
             <button
               type="button"
               onClick={() => { setMode('register'); setError(''); setSuccess(''); }}
-              className={`py-2 px-3 rounded-lg text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all ${
-                mode === 'register'
+              className={`py-2 px-3 rounded-lg text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all ${mode === 'register'
                   ? 'bg-white text-slate-900 shadow-sm border border-slate-200'
                   : 'text-slate-600 hover:text-slate-900 font-bold'
-              }`}
+                }`}
             >
               <UserPlus size={15} />
               <span>Create Account</span>
@@ -205,11 +247,10 @@ export default function LoginScreen({ onLogin }) {
             <button
               type="button"
               onClick={() => { setRole('student'); setError(''); }}
-              className={`py-2 px-3 rounded-lg text-xs font-extrabold flex items-center justify-center gap-2 transition-all ${
-                role === 'student'
+              className={`py-2 px-3 rounded-lg text-xs font-extrabold flex items-center justify-center gap-2 transition-all ${role === 'student'
                   ? 'bg-sky-500 text-white shadow-sm'
                   : 'text-slate-600 hover:text-slate-900 font-bold'
-              }`}
+                }`}
             >
               <GraduationCap size={16} />
               <span>Student</span>
@@ -217,11 +258,10 @@ export default function LoginScreen({ onLogin }) {
             <button
               type="button"
               onClick={() => { setRole('landlord'); setError(''); }}
-              className={`py-2 px-3 rounded-lg text-xs font-extrabold flex items-center justify-center gap-2 transition-all ${
-                role === 'landlord'
+              className={`py-2 px-3 rounded-lg text-xs font-extrabold flex items-center justify-center gap-2 transition-all ${role === 'landlord'
                   ? 'bg-emerald-600 text-white shadow-sm'
                   : 'text-slate-600 hover:text-slate-900 font-bold'
-              }`}
+                }`}
             >
               <Home size={16} />
               <span>House Owner</span>
@@ -243,7 +283,7 @@ export default function LoginScreen({ onLogin }) {
 
           {/* Authentication Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            
+
             {/* Registration Specific Fields */}
             {mode === 'register' && (
               <>
@@ -381,11 +421,10 @@ export default function LoginScreen({ onLogin }) {
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full py-3 px-4 rounded-xl text-xs font-extrabold text-white shadow-lg transition-all flex items-center justify-center gap-2 active:scale-98 disabled:opacity-50 ${
-                role === 'student'
+              className={`w-full py-3 px-4 rounded-xl text-xs font-extrabold text-white shadow-lg transition-all flex items-center justify-center gap-2 active:scale-98 disabled:opacity-50 ${role === 'student'
                   ? 'bg-gradient-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 shadow-sky-500/25'
                   : 'bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 shadow-emerald-500/25'
-              }`}
+                }`}
             >
               {isLoading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
