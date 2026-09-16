@@ -180,33 +180,7 @@ export default function CompareModal({
                 ))}
               </tr>
 
-              {/* Landlord Verification */}
-              <tr>
-                <td className="p-3 font-extrabold text-slate-900 bg-slate-50">Landlord Verified</td>
-                {compareListings.map((item) => (
-                  <td key={item.id} className="p-3 text-center">
-                    {item.verified ? (
-                      <span className="badge badge-verified inline-flex shadow-sm">
-                        <ShieldCheck size={12} /> Verified Owner
-                      </span>
-                    ) : (
-                      <span className="text-slate-400 text-[11px]">Unverified</span>
-                    )}
-                  </td>
-                ))}
-              </tr>
 
-              {/* Rating */}
-              <tr>
-                <td className="p-3 font-bold text-slate-700">Student Rating</td>
-                {compareListings.map((item) => (
-                  <td key={item.id} className="p-3 text-center font-extrabold text-amber-700">
-                    <span className="inline-flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
-                      <Star size={13} className="fill-amber-400 text-amber-500" /> {item.rating} ({item.reviewCount})
-                    </span>
-                  </td>
-                ))}
-              </tr>
 
             </tbody>
           </table>

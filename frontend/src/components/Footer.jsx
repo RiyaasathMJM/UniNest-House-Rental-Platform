@@ -15,8 +15,8 @@ export default function Footer() {
                 <ShieldCheck size={20} />
               </div>
               <div>
-                <h4 className="font-extrabold text-white text-sm">Verified Property Owners</h4>
-                <p className="text-slate-400 text-xs font-medium">National ID & property document checked</p>
+                <h4 className="font-extrabold text-white text-sm">Property Owner Listings</h4>
+                <p className="text-slate-400 text-xs font-medium">Direct contact with house owners</p>
               </div>
             </div>
 
@@ -56,7 +56,7 @@ export default function Footer() {
               <span className="text-xl font-extrabold text-white font-heading">Uni<span className="text-sky-400">Nest</span></span>
             </div>
             <p className="text-slate-400 leading-relaxed text-xs font-medium">
-              The leading digital house rental platform designed to connect university students directly with verified house owners near university premises.
+              The leading digital house rental platform designed to connect university students directly with house owners near university premises.
             </p>
           </div>
 
@@ -84,9 +84,9 @@ export default function Footer() {
             <h4 className="font-extrabold text-white text-sm mb-3">Support & Safety</h4>
             <ul className="space-y-2 text-slate-400 text-xs font-medium">
               <li className="hover:text-sky-400 transition-colors cursor-pointer">Student Safety Guidelines</li>
-              <li className="hover:text-sky-400 transition-colors cursor-pointer">Landlord Verification Portal</li>
+              <li className="hover:text-sky-400 transition-colors cursor-pointer">Landlord Registration Portal</li>
               <li className="hover:text-sky-400 transition-colors cursor-pointer">Rental Agreement Templates</li>
-              <li className="hover:text-sky-400 transition-colors cursor-pointer">Report Unverified Listing</li>
+              <li className="hover:text-sky-400 transition-colors cursor-pointer">Report Listing Issues</li>
             </ul>
           </div>
 

@@ -30,12 +30,11 @@ export default function StudentDashboard({
       <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-sky-50 via-white to-blue-50 border border-sky-200/90 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <span className="badge badge-verified"><GraduationCap size={13} /> Verified Student Profile</span>
             <span className="text-xs text-slate-500 font-bold">Student Housing Portal</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">Student Housing Portal</h1>
           <p className="text-xs sm:text-sm text-slate-600 font-medium max-w-xl">
-            Track your viewing applications, review bookmarked boarding houses, and chat directly with verified landlords.
+            Track your viewing applications, review bookmarked boarding houses, and chat directly with landlords.
           </p>
         </div>
 
@@ -165,7 +164,7 @@ export default function StudentDashboard({
                       <span className="w-8 h-8 rounded-full bg-sky-100 text-sky-700 font-extrabold text-xs flex items-center justify-center border border-sky-300">
                         {msg.senderName ? msg.senderName.charAt(0) : 'L'}
                       </span>
-                      <h4 className="font-extrabold text-slate-900 text-base">{msg.senderName || 'Verified Landlord'}</h4>
+                      <h4 className="font-extrabold text-slate-900 text-base">{msg.senderName || 'House Owner'}</h4>
                       <span className="text-[11px] font-bold text-slate-500">{msg.timestamp || 'Just now'}</span>
                     </div>
 

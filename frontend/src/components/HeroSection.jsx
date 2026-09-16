@@ -28,11 +28,11 @@ export default function HeroSection({
 
           {/* Main Headline */}
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight">
-            Find <span className="bg-gradient-to-r from-sky-600 via-teal-600 to-emerald-600 bg-clip-text text-transparent">Verified Boarding & Annexes</span> Near Campus
+            Find <span className="bg-gradient-to-r from-sky-600 via-teal-600 to-emerald-600 bg-clip-text text-transparent">Boarding & Annexes</span> Near Campus
           </h1>
 
           <p className="text-sm sm:text-lg text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed">
-            Transparent pricing, walking distance calculation to faculties, and direct contact with verified house owners — no hidden agent commissions.
+            Transparent pricing, walking distance calculation to faculties, and direct contact with house owners — no hidden agent commissions.
           </p>
 
           {/* Interactive Search Bar Panel */}
@@ -131,8 +131,8 @@ export default function HeroSection({
                 <ShieldCheck size={20} />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-slate-900">Verified Owners</h4>
-                <p className="text-[11px] text-slate-500 font-medium">Owner ID verified</p>
+                <h4 className="text-xs font-bold text-slate-900">Direct Contact</h4>
+                <p className="text-[11px] text-slate-500 font-medium">Connect directly with owners</p>
               </div>
             </div>
 

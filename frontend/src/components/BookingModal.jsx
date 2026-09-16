@@ -83,7 +83,7 @@ export default function BookingModal({
                 <h4 className="font-extrabold text-slate-900 text-xs line-clamp-1">{listing.title}</h4>
                 <p className="text-[11px] text-sky-700 font-bold">Rs. {listing.monthlyRent.toLocaleString()} / month</p>
               </div>
-              <span className="badge badge-verified text-[10px]">Owner: {listing.landlord.name}</span>
+              <span className="px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 text-[10px] font-bold border border-slate-200">Owner: {listing.landlord.name}</span>
             </div>
 
             {/* Application Type */}

@@ -67,7 +67,6 @@ export default function ListingDetailModal({
         {/* Sticky Close Header */}
         <div className="sticky top-0 z-30 bg-slate-50/95 backdrop-blur-md px-6 py-4 border-b border-slate-200 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="badge badge-verified shadow-sm"><ShieldCheck size={12} /> Verified Listing</span>
             <span className="text-xs text-slate-500 font-mono font-bold">ID: {id}</span>
           </div>
           <button
@@ -187,7 +186,7 @@ export default function ListingDetailModal({
 
               <div className="text-[11px] text-slate-500 text-center flex items-center justify-center gap-1 font-medium">
                 <ShieldCheck size={13} className="text-emerald-600" />
-                <span>Zero Broker Commission • Verified Owners</span>
+                <span>Zero Broker Commission</span>
               </div>
             </div>
 
@@ -233,7 +232,7 @@ export default function ListingDetailModal({
 
             <div className="flex items-center justify-between text-xs text-slate-500 pt-1 font-medium">
               <span className="flex items-center gap-1 text-emerald-700 font-bold">
-                <CheckCircle2 size={13} /> Verified GPS Pin location near {nearbyFaculty}
+                <CheckCircle2 size={13} /> GPS Pin location near {nearbyFaculty}
               </span>
               <span>{walkingTimeMinutes} minutes walking route</span>
             </div>
@@ -326,9 +325,6 @@ export default function ListingDetailModal({
               <div>
                 <div className="flex items-center gap-2">
                   <h4 className="font-extrabold text-slate-900 text-base">{landlord.name}</h4>
-                  {landlord.verified && (
-                    <span className="badge badge-verified text-[10px]">Verified Owner</span>
-                  )}
                 </div>
                 <p className="text-xs text-slate-600 font-medium">Response Rate: <span className="text-emerald-700 font-bold">{landlord.responseRate}</span></p>
                 <p className="text-xs text-slate-500">Member since {landlord.joinedYear}</p>

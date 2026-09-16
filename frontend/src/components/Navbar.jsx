@@ -58,7 +58,7 @@ export default function Navbar({
                 </span>
               </div>
               <p className="text-xs text-slate-400 hidden sm:block font-medium">
-                {userRole === 'landlord' ? 'Landlord Property Management' : 'Verified Student Rentals & Annexes'}
+                {userRole === 'landlord' ? 'Landlord Property Management' : 'Student Rentals & Annexes'}
               </p>
             </div>
           </div>

@@ -37,7 +37,6 @@ export default function LandlordDashboard({
       <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-emerald-50 via-white to-teal-50 border border-emerald-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <span className="badge badge-verified"><ShieldCheck size={13} /> Verified Property Owner</span>
             <span className="text-xs text-slate-600 font-bold">House Owner Portal</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">House Owner Management Dashboard</h1>

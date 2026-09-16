@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Building2, MapPin, Footprints, DollarSign, Check, Plus, ShieldCheck } from 'lucide-react';
+import { X, Building2, MapPin, Footprints, DollarSign, Check, Plus, Upload, Camera, Navigation, Trash2, Image as ImageIcon } from 'lucide-react';
 import { UNIVERSITIES, PROPERTY_TYPES, AMENITIES_LIST } from '../data/mockData';
 
 export default function AddListingModal({
@@ -13,6 +13,8 @@ export default function AddListingModal({
     type: 'Annex',
     universityId: 'u-colombo',
     address: '',
+    lat: '6.9010',
+    lng: '79.8600',
     googleMapsUrl: '',
     distanceKm: 0.5,
     walkingTimeMinutes: 6,
@@ -32,6 +34,11 @@ export default function AddListingModal({
     description: ''
   });
 
+  const [uploadedPhotos, setUploadedPhotos] = useState([
+    'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=1000&q=80'
+  ]);
+  const [isDetectingLocation, setIsDetectingLocation] = useState(false);
+
   const handleAmenityToggle = (am) => {
     setFormData(prev => {
       const exists = prev.amenities.includes(am);
@@ -40,8 +47,57 @@ export default function AddListingModal({
     });
   };
 
+  const handlePhotoFileUpload = (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUploadedPhotos(prev => [...prev, reader.result]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleRemovePhoto = (index) => {
+    setUploadedPhotos(prev => prev.filter((_, idx) => idx !== index));
+  };
+
+  const handleDetectGPSLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your device browser.");
+      return;
+    }
+    setIsDetectingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude.toFixed(6);
+        const lng = pos.coords.longitude.toFixed(6);
+        setFormData(prev => ({
+          ...prev,
+          lat,
+          lng,
+          address: prev.address || `GPS Pin (${lat}, ${lng})`,
+          googleMapsUrl: `https://www.google.com/maps?q=${lat},${lng}`
+        }));
+        setIsDetectingLocation(false);
+      },
+      (err) => {
+        console.warn("Geolocation error:", err.message);
+        setIsDetectingLocation(false);
+        alert("Unable to detect GPS coordinates automatically. You can enter address or map link manually below.");
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    const finalImages = uploadedPhotos.length > 0 
+      ? uploadedPhotos 
+      : [formData.imageUrl || 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=1000&q=80'];
+
     const newListing = {
       id: `lst-${Date.now()}`,
       ...formData,
@@ -52,10 +108,10 @@ export default function AddListingModal({
       verified: true,
       rating: 5.0,
       reviewCount: 1,
-      images: [formData.imageUrl],
+      images: finalImages,
       landlord: {
         id: 'l-owner-self',
-        name: 'Verified Landlord (You)',
+        name: 'House Owner (You)',
         phone: '+94 77 000 1122',
         email: 'owner@unilodge.lk',
         avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
@@ -179,6 +235,30 @@ export default function AddListingModal({
           {/* Step 2: Location */}
           {step === 2 && (
             <div className="space-y-4 animate-fade-in">
+              
+              {/* Quick GPS Geolocation Button */}
+              <div className="p-3 bg-sky-50 border border-sky-200 rounded-xl flex items-center justify-between gap-3">
+                <div className="space-y-0.5">
+                  <span className="font-extrabold text-sky-900 text-xs flex items-center gap-1.5">
+                    <MapPin size={14} className="text-sky-600" /> Set House Location on Website
+                  </span>
+                  <p className="text-[11px] text-sky-700 font-medium">Use device GPS or enter address to set exact map coordinates</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleDetectGPSLocation}
+                  disabled={isDetectingLocation}
+                  className="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-sm transition-all shrink-0 active:scale-95 disabled:opacity-50"
+                >
+                  {isDetectingLocation ? (
+                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Navigation size={13} />
+                  )}
+                  <span>{isDetectingLocation ? 'Detecting...' : 'Use My GPS Location'}</span>
+                </button>
+              </div>
+
               <div className="space-y-1">
                 <label className="text-slate-700 font-bold block">Target University Campus *</label>
                 <select
@@ -213,6 +293,24 @@ export default function AddListingModal({
                   onChange={(e) => setFormData({ ...formData, googleMapsUrl: e.target.value })}
                   className="input-control text-xs bg-slate-50 text-slate-900 border-slate-300 font-medium"
                 />
+              </div>
+
+              {/* Embedded Live Google Maps Setter Preview Box */}
+              <div className="space-y-1.5 pt-1">
+                <label className="text-slate-700 font-extrabold block text-[11px] flex items-center justify-between">
+                  <span>Interactive Map Preview (Set Location):</span>
+                  <span className="text-slate-500 font-normal text-[10px]">Updates automatically from address</span>
+                </label>
+                <div className="w-full h-44 rounded-xl overflow-hidden border border-slate-300 shadow-inner bg-slate-100 relative">
+                  <iframe
+                    title="Live Location Setter Map"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    loading="lazy"
+                    src={`https://maps.google.com/maps?q=${encodeURIComponent((formData.address || 'Colombo, Sri Lanka') + ', Sri Lanka')}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -351,16 +449,66 @@ export default function AddListingModal({
             </div>
           )}
 
-          {/* Step 4: Amenities & Photo URL */}
+          {/* Step 4: Amenities & Device Photos */}
           {step === 4 && (
             <div className="space-y-4 animate-fade-in">
+              
+              {/* Device Photo Upload Box */}
+              <div className="space-y-2 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                <label className="text-slate-900 font-extrabold block text-xs flex items-center gap-1.5">
+                  <Camera size={16} className="text-emerald-600" /> Accommodation Photos (Upload from Device) *
+                </label>
+                
+                <input
+                  type="file"
+                  id="device-photo-upload"
+                  accept="image/*"
+                  multiple
+                  onChange={handlePhotoFileUpload}
+                  className="hidden"
+                />
+
+                <label
+                  htmlFor="device-photo-upload"
+                  className="w-full flex items-center justify-center gap-2 p-3.5 bg-white hover:bg-slate-100 border-2 border-dashed border-emerald-400 rounded-xl cursor-pointer text-emerald-800 font-extrabold text-xs transition-all shadow-sm active:scale-98"
+                >
+                  <Upload size={18} className="text-emerald-600" />
+                  <span>Click to Pick & Upload Photos from Device</span>
+                </label>
+
+                {/* Uploaded Thumbnails List */}
+                {uploadedPhotos.length > 0 && (
+                  <div className="grid grid-cols-4 gap-2 pt-2">
+                    {uploadedPhotos.map((photo, idx) => (
+                      <div key={idx} className="relative h-20 rounded-xl overflow-hidden border border-slate-300 group bg-slate-200">
+                        <img src={photo} alt={`Upload ${idx+1}`} className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => handleRemovePhoto(idx)}
+                          className="absolute top-1 right-1 w-6 h-6 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center shadow-md transition-all text-xs"
+                          title="Remove photo"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Image URL fallback */}
               <div className="space-y-1">
-                <label className="text-slate-700 font-bold block">Accommodation Photo URL *</label>
+                <label className="text-slate-600 font-semibold block text-[11px]">Or Provide Photo Image URL:</label>
                 <input
                   type="text"
-                  required
+                  placeholder="https://images.unsplash.com/..."
                   value={formData.imageUrl}
-                  onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, imageUrl: e.target.value });
+                    if (e.target.value && !uploadedPhotos.includes(e.target.value)) {
+                      setUploadedPhotos(prev => [e.target.value, ...prev]);
+                    }
+                  }}
                   className="input-control text-xs font-mono bg-slate-50 text-slate-900 border-slate-300"
                 />
               </div>

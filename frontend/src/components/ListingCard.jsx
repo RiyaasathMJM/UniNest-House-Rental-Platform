@@ -54,11 +54,6 @@ export default function ListingCard({
         {/* Top Badges */}
         <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-10">
           <div className="flex flex-wrap items-center gap-1.5 pointer-events-auto">
-            {verified && (
-              <span className="badge badge-verified shadow-sm backdrop-blur-md">
-                <ShieldCheck size={12} /> Verified
-              </span>
-            )}
             <span className="badge badge-distance shadow-sm backdrop-blur-md">
               <Footprints size={12} /> {walkingTimeMinutes} min walk
             </span>
@@ -98,7 +93,7 @@ export default function ListingCard({
       <div className="p-5 space-y-3.5 flex-1 flex flex-col justify-between">
         <div className="space-y-2">
           
-          {/* Title & Rating */}
+          {/* Title */}
           <div className="flex items-start justify-between gap-2">
             <h3 
               onClick={() => onSelectListing(listing)}
@@ -106,10 +101,6 @@ export default function ListingCard({
             >
               {title}
             </h3>
-            <div className="flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded-md text-amber-700 text-xs font-bold shrink-0 border border-amber-200">
-              <Star size={12} className="fill-amber-400 text-amber-500" />
-              <span>{rating}</span>
-            </div>
           </div>
 
           {/* Proximity / Faculty */}

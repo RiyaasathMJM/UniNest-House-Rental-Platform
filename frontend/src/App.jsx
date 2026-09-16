@@ -23,13 +23,33 @@ import {
 import { Sparkles, Footprints, ShieldCheck, Heart, SlidersHorizontal, RefreshCw } from 'lucide-react';
 
 export default function App() {
-  // Authentication & Current User State
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
+  // Authentication & Current User State - Hydrated from localStorage
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    const savedAuth = localStorage.getItem('uninest_auth');
+    const token = localStorage.getItem('uninest_token');
+    return savedAuth === 'true' || Boolean(token);
+  });
 
-  // Navigation & Role State
-  const [userRole, setUserRole] = useState('student'); // 'student' | 'landlord'
-  const [activeTab, setActiveTab] = useState('explore'); // 'explore' | 'student-portal' | 'landlord'
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const savedUser = localStorage.getItem('uninest_user');
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  // Navigation & Role State - Hydrated from localStorage
+  const [userRole, setUserRole] = useState(() => {
+    return localStorage.getItem('uninest_role') || 'student';
+  });
+
+  const [activeTab, setActiveTab] = useState(() => {
+    const savedTab = localStorage.getItem('uninest_active_tab');
+    if (savedTab) return savedTab;
+    const savedRole = localStorage.getItem('uninest_role') || 'student';
+    return savedRole === 'landlord' ? 'landlord' : 'explore';
+  });
 
   // Search & Filter State
   const [selectedUniversity, setSelectedUniversity] = useState('all');
@@ -99,8 +119,14 @@ export default function App() {
   useEffect(() => {
     if (isAuthenticated) {
       loadLiveData();
+      localStorage.setItem('uninest_auth', 'true');
+      localStorage.setItem('uninest_role', userRole);
+      localStorage.setItem('uninest_active_tab', activeTab);
+      if (currentUser) {
+        localStorage.setItem('uninest_user', JSON.stringify(currentUser));
+      }
     }
-  }, [isAuthenticated, userRole]);
+  }, [isAuthenticated, userRole, activeTab, currentUser]);
 
   // Filter Logic Computation
   const filteredListings = useMemo(() => {
@@ -255,14 +281,26 @@ export default function App() {
   }, [listings, savedIds]);
 
   const handleLogin = (role, userObj) => {
+    const initialTab = role === 'landlord' ? 'landlord' : 'explore';
     setUserRole(role);
     setCurrentUser(userObj);
-    setActiveTab(role === 'landlord' ? 'landlord' : 'explore');
+    setActiveTab(initialTab);
     setIsAuthenticated(true);
+
+    localStorage.setItem('uninest_auth', 'true');
+    localStorage.setItem('uninest_role', role);
+    localStorage.setItem('uninest_active_tab', initialTab);
+    if (userObj) {
+      localStorage.setItem('uninest_user', JSON.stringify(userObj));
+    }
   };
 
   const handleLogout = () => {
     localStorage.removeItem('uninest_token');
+    localStorage.removeItem('uninest_auth');
+    localStorage.removeItem('uninest_user');
+    localStorage.removeItem('uninest_role');
+    localStorage.removeItem('uninest_active_tab');
     setIsAuthenticated(false);
     setCurrentUser(null);
   };
@@ -365,7 +403,7 @@ export default function App() {
                       </h2>
                       <p className="text-xs text-slate-500 font-medium">
                         {selectedUniversity === 'all' 
-                          ? 'Showing live verified listings from Supabase' 
+                          ? 'Showing live listings from Supabase' 
                           : `Filtered near ${UNIVERSITIES.find(u => u.id === selectedUniversity)?.name}`}
                       </p>
                     </div>
