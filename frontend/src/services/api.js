@@ -42,7 +42,9 @@ export const apiService = {
   },
   getListingById: (id) => fetchAPI(`/listings/${id}`),
   createListing: (listingData) => fetchAPI('/listings', { method: 'POST', body: JSON.stringify(listingData) }),
+  updateListing: (id, listingData) => fetchAPI(`/listings/${id}`, { method: 'PUT', body: JSON.stringify(listingData) }),
   deleteListing: (id) => fetchAPI(`/listings/${id}`, { method: 'DELETE' }),
+
 
   // Applications
   submitApplication: (appData) => fetchAPI('/applications', { method: 'POST', body: JSON.stringify(appData) }),

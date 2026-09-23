@@ -13,7 +13,9 @@ import {
   Eye, 
   TrendingUp,
   MapPin,
-  ExternalLink
+  ExternalLink,
+  Pencil,
+  RotateCcw
 } from 'lucide-react';
 
 export default function LandlordDashboard({
@@ -22,9 +24,12 @@ export default function LandlordDashboard({
   messages = [],
   onUpdateApplicationStatus,
   onOpenAddListing,
+
+  onEditListing,
   onDeleteListing,
   onOpenChatModal
 }) {
+
   const [activeTab, setActiveTab] = useState('applications');
 
   const pendingApps = applications.filter(a => a.status === 'Pending');
@@ -216,6 +221,45 @@ export default function LandlordDashboard({
                         </button>
                       </>
                     )}
+
+                    {app.status === 'Approved' && (
+                      <>
+                        <button
+                          onClick={() => onUpdateApplicationStatus(app.id, 'Pending')}
+                          className="btn btn-outline text-xs px-3 py-2 text-amber-700 border-amber-300 hover:bg-amber-50 font-extrabold flex items-center justify-center gap-1.5"
+                          title="Undo approval and reset application to pending state"
+                        >
+                          <RotateCcw size={14} /> Undo Decision
+                        </button>
+                        <button
+                          onClick={() => onUpdateApplicationStatus(app.id, 'Declined')}
+                          className="btn btn-outline text-xs px-3 py-2 text-rose-600 border-rose-300 hover:bg-rose-50 font-extrabold flex items-center justify-center gap-1.5"
+                          title="Switch decision to declined"
+                        >
+                          <XCircle size={14} /> Change to Decline
+                        </button>
+                      </>
+                    )}
+
+                    {app.status === 'Declined' && (
+                      <>
+                        <button
+                          onClick={() => onUpdateApplicationStatus(app.id, 'Pending')}
+                          className="btn btn-outline text-xs px-3 py-2 text-amber-700 border-amber-300 hover:bg-amber-50 font-extrabold flex items-center justify-center gap-1.5"
+                          title="Undo decline and reset application to pending state"
+                        >
+                          <RotateCcw size={14} /> Undo Decision
+                        </button>
+                        <button
+                          onClick={() => onUpdateApplicationStatus(app.id, 'Approved')}
+                          className="btn btn-accent text-xs px-3.5 py-2 font-extrabold flex items-center justify-center gap-1.5 shadow-sm"
+                          title="Switch decision to accepted"
+                        >
+                          <CheckCircle2 size={14} /> Change to Accept
+                        </button>
+                      </>
+                    )}
+
                   </div>
                 </div>
               ))}
@@ -317,21 +361,30 @@ export default function LandlordDashboard({
                   </div>
 
                   <div className="flex sm:flex-col gap-2 shrink-0 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-                    <a
-                      href={googleMapsLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn-outline text-xs px-3 py-1.5 border-emerald-300 text-emerald-800 hover:bg-emerald-50 font-extrabold flex items-center justify-center gap-1"
-                    >
-                      <MapPin size={13} /> Maps
-                    </a>
                     <button
-                      onClick={() => onDeleteListing(lst.id)}
-                      className="p-2 rounded-xl bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-600 hover:text-white transition-colors flex items-center justify-center"
-                      title="Delete listing"
+                      onClick={() => onEditListing && onEditListing(lst)}
+                      className="btn btn-outline text-xs px-3 py-1.5 border-sky-300 text-sky-700 hover:bg-sky-50 font-extrabold flex items-center justify-center gap-1"
+                      title="Edit accommodation details"
                     >
-                      <Trash2 size={16} />
+                      <Pencil size={13} /> Edit
                     </button>
+                    <div className="flex gap-2">
+                      <a
+                        href={googleMapsLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-outline text-xs px-3 py-1.5 border-emerald-300 text-emerald-800 hover:bg-emerald-50 font-extrabold flex items-center justify-center gap-1 flex-1 sm:flex-initial"
+                      >
+                        <MapPin size={13} /> Maps
+                      </a>
+                      <button
+                        onClick={() => onDeleteListing(lst.id)}
+                        className="p-2 rounded-xl bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-600 hover:text-white transition-colors flex items-center justify-center shrink-0"
+                        title="Delete listing"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               );

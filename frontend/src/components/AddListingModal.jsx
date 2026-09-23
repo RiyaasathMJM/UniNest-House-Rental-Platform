@@ -4,39 +4,45 @@ import { UNIVERSITIES, PROPERTY_TYPES, AMENITIES_LIST } from '../data/mockData';
 
 export default function AddListingModal({
   onClose,
-  onAddListing
+  onAddListing,
+  editingListing = null,
+  onUpdateListing = null
 }) {
+  const isEditMode = Boolean(editingListing);
+
   const [step, setStep] = useState(1);
 
   const [formData, setFormData] = useState({
-    title: '',
-    type: 'Annex',
-    universityId: 'u-colombo',
-    address: '',
-    lat: '6.9010',
-    lng: '79.8600',
-    googleMapsUrl: '',
-    distanceKm: 0.5,
-    walkingTimeMinutes: 6,
-    nearbyFaculty: 'Faculty of Science',
-    monthlyRent: 20000,
-    securityDeposit: 20000,
-    billsIncluded: {
+    title: editingListing?.title || '',
+    type: editingListing?.type || 'Annex',
+    universityId: editingListing?.universityId || 'u-colombo',
+    address: editingListing?.address || '',
+    lat: editingListing?.lat || '6.9010',
+    lng: editingListing?.lng || '79.8600',
+    googleMapsUrl: editingListing?.googleMapsUrl || '',
+    distanceKm: editingListing?.distanceKm ?? 0.5,
+    walkingTimeMinutes: editingListing?.walkingTimeMinutes ?? 6,
+    nearbyFaculty: editingListing?.nearbyFaculty || 'Faculty of Science',
+    monthlyRent: editingListing?.monthlyRent ?? 20000,
+    securityDeposit: editingListing?.securityDeposit ?? 20000,
+    billsIncluded: editingListing?.billsIncluded || {
       water: true,
       electricity: false,
       wifi: true
     },
-    genderPreference: 'Any',
-    maxOccupants: 1,
-    imageUrl: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=1000&q=80',
-    amenities: ['High-Speed Wi-Fi', 'Study Desk & Chair', 'Attached Bathroom'],
-    houseRules: ['Curfew at 10:00 PM', 'No Smoking inside premises'],
-    description: ''
+    genderPreference: editingListing?.genderPreference || 'Any',
+    maxOccupants: editingListing?.maxOccupants ?? 1,
+    imageUrl: editingListing?.images?.[0] || 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=1000&q=80',
+    amenities: editingListing?.amenities || ['High-Speed Wi-Fi', 'Study Desk & Chair', 'Attached Bathroom'],
+    houseRules: editingListing?.houseRules || ['Curfew at 10:00 PM', 'No Smoking inside premises'],
+    description: editingListing?.description || ''
   });
 
-  const [uploadedPhotos, setUploadedPhotos] = useState([
-    'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=1000&q=80'
-  ]);
+  const [uploadedPhotos, setUploadedPhotos] = useState(
+    editingListing?.images && editingListing.images.length > 0
+      ? editingListing.images
+      : ['https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=1000&q=80']
+  );
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
 
   const handleAmenityToggle = (am) => {
@@ -98,29 +104,42 @@ export default function AddListingModal({
       ? uploadedPhotos 
       : [formData.imageUrl || 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=1000&q=80'];
 
-    const newListing = {
-      id: `lst-${Date.now()}`,
-      ...formData,
-      distanceKm: Number(formData.distanceKm),
-      walkingTimeMinutes: Number(formData.walkingTimeMinutes),
-      monthlyRent: Number(formData.monthlyRent),
-      securityDeposit: Number(formData.securityDeposit),
-      verified: true,
-      rating: 5.0,
-      reviewCount: 1,
-      images: finalImages,
-      landlord: {
-        id: 'l-owner-self',
-        name: 'House Owner (You)',
-        phone: '+94 77 000 1122',
-        email: 'owner@unilodge.lk',
-        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
+    if (isEditMode && onUpdateListing) {
+      const updatedListing = {
+        ...editingListing,
+        ...formData,
+        distanceKm: Number(formData.distanceKm),
+        walkingTimeMinutes: Number(formData.walkingTimeMinutes),
+        monthlyRent: Number(formData.monthlyRent),
+        securityDeposit: Number(formData.securityDeposit),
+        images: finalImages
+      };
+      onUpdateListing(editingListing.id, updatedListing);
+    } else {
+      const newListing = {
+        id: `lst-${Date.now()}`,
+        ...formData,
+        distanceKm: Number(formData.distanceKm),
+        walkingTimeMinutes: Number(formData.walkingTimeMinutes),
+        monthlyRent: Number(formData.monthlyRent),
+        securityDeposit: Number(formData.securityDeposit),
         verified: true,
-        responseRate: '100%',
-        joinedYear: '2026'
-      }
-    };
-    onAddListing(newListing);
+        rating: 5.0,
+        reviewCount: 1,
+        images: finalImages,
+        landlord: {
+          id: 'l-owner-self',
+          name: 'House Owner (You)',
+          phone: '+94 77 000 1122',
+          email: 'owner@unilodge.lk',
+          avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
+          verified: true,
+          responseRate: '100%',
+          joinedYear: '2026'
+        }
+      };
+      onAddListing(newListing);
+    }
     onClose();
   };
 
@@ -135,8 +154,11 @@ export default function AddListingModal({
         <div className="px-6 py-4 bg-slate-50/95 backdrop-blur-md border-b border-slate-200 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Building2 size={20} className="text-emerald-600" />
-            <h2 className="text-base font-extrabold text-slate-900">Post New Student Accommodation</h2>
+            <h2 className="text-base font-extrabold text-slate-900">
+              {isEditMode ? 'Edit Accommodation Listing' : 'Post New Student Accommodation'}
+            </h2>
           </div>
+
           <button
             onClick={onClose}
             className="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold flex items-center justify-center text-xs transition-colors"
@@ -546,7 +568,7 @@ export default function AddListingModal({
                   type="submit"
                   className="btn btn-accent flex-1 py-2.5 font-bold shadow-md shadow-emerald-600/20"
                 >
-                  Publish Listing Now ✨
+                  {isEditMode ? 'Save Changes ✨' : 'Publish Listing Now ✨'}
                 </button>
               </div>
             </div>

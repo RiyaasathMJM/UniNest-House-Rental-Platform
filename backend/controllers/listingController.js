@@ -207,6 +207,91 @@ const createListing = async (req, res) => {
   }
 };
 
+// @desc    Update property listing (Landlord only)
+// @route   PUT /api/listings/:id
+// @access  Private (Landlord)
+const updateListing = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      title,
+      type,
+      universityId,
+      address,
+      distanceKm,
+      walkingTimeMinutes,
+      nearbyFaculty,
+      monthlyRent,
+      securityDeposit,
+      waterIncluded,
+      electricityIncluded,
+      wifiIncluded,
+      billsIncluded,
+      genderPreference,
+      maxOccupants,
+      amenities,
+      houseRules,
+      description,
+      images: imageUrls
+    } = req.body;
+
+    let uploadedImages = [];
+    if (req.files && req.files.length > 0) {
+      uploadedImages = req.files.map(file => file.path);
+    } else if (imageUrls && Array.isArray(imageUrls)) {
+      uploadedImages = imageUrls;
+    }
+
+    const waterVal = billsIncluded ? billsIncluded.water : waterIncluded;
+    const elecVal = billsIncluded ? billsIncluded.electricity : electricityIncluded;
+    const wifiVal = billsIncluded ? billsIncluded.wifi : wifiIncluded;
+
+    const updatedFields = {
+      title,
+      type,
+      university_id: universityId,
+      address,
+      distance_km: distanceKm !== undefined ? parseFloat(distanceKm) : undefined,
+      walking_time_minutes: walkingTimeMinutes !== undefined ? parseInt(walkingTimeMinutes) : undefined,
+      nearby_faculty: nearbyFaculty,
+      monthly_rent: monthlyRent !== undefined ? parseFloat(monthlyRent) : undefined,
+      security_deposit: securityDeposit !== undefined ? parseFloat(securityDeposit) : undefined,
+      water_included: waterVal !== undefined ? (waterVal === true || waterVal === 'true') : undefined,
+      electricity_included: elecVal !== undefined ? (elecVal === true || elecVal === 'true') : undefined,
+      wifi_included: wifiVal !== undefined ? (wifiVal === true || wifiVal === 'true') : undefined,
+      gender_preference: genderPreference,
+      max_occupants: maxOccupants !== undefined ? parseInt(maxOccupants) : undefined,
+      images: uploadedImages && uploadedImages.length > 0 ? uploadedImages : undefined,
+      amenities: typeof amenities === 'string' ? JSON.parse(amenities) : amenities,
+      house_rules: typeof houseRules === 'string' ? JSON.parse(houseRules) : houseRules,
+      description: description
+    };
+
+    // Remove undefined properties
+    Object.keys(updatedFields).forEach(key => updatedFields[key] === undefined && delete updatedFields[key]);
+
+    const { data, error } = await supabase
+      .from('listings')
+      .update(updatedFields)
+      .eq('id', id)
+      .select('*, landlord:users(*)')
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    res.json({
+      success: true,
+      message: 'Listing updated successfully',
+      data: formatListing(data, data.landlord)
+    });
+  } catch (error) {
+    console.error('updateListing error:', error.message);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // @desc    Delete listing
 // @route   DELETE /api/listings/:id
 // @access  Private (Landlord)
@@ -232,5 +317,7 @@ module.exports = {
   getListings,
   getListingById,
   createListing,
+  updateListing,
   deleteListing
 };
+

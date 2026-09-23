@@ -81,6 +81,7 @@ export default function App() {
   const [chatListing, setChatListing] = useState(null);
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
   const [isAddListingModalOpen, setIsAddListingModalOpen] = useState(false);
+  const [editingListing, setEditingListing] = useState(null);
   const [isBookmarksOpen, setIsBookmarksOpen] = useState(false);
 
   // Fetch Live Data from Supabase Backend API
@@ -226,6 +227,22 @@ export default function App() {
     alert("✨ Accommodation Published Successfully! It is now live on Supabase & Cloudinary.");
   };
 
+  const handleUpdateListing = async (id, updatedListing) => {
+    try {
+      const res = await apiService.updateListing(id, updatedListing);
+      if (res.success && res.data) {
+        setListings(prev => prev.map(l => l.id === id ? res.data : l));
+      } else {
+        setListings(prev => prev.map(l => l.id === id ? updatedListing : l));
+      }
+    } catch (err) {
+      console.warn("Falling back to local state for updated listing:", err.message);
+      setListings(prev => prev.map(l => l.id === id ? updatedListing : l));
+    }
+    setEditingListing(null);
+    alert("✨ Accommodation Updated Successfully!");
+  };
+
   const handleDeleteListing = async (id) => {
     if (confirm("Are you sure you want to remove this property listing?")) {
       try {
@@ -339,6 +356,7 @@ export default function App() {
               messages={messages}
               onUpdateApplicationStatus={handleUpdateApplicationStatus}
               onOpenAddListing={() => setIsAddListingModalOpen(true)}
+              onEditListing={(lst) => setEditingListing(lst)}
               onDeleteListing={handleDeleteListing}
               onOpenChatModal={(l) => setChatListing(l)}
             />
@@ -566,11 +584,16 @@ export default function App() {
         />
       )}
 
-      {/* Landlord Add Listing Modal */}
-      {isAddListingModalOpen && (
+      {/* Landlord Add / Edit Listing Modal */}
+      {(isAddListingModalOpen || editingListing) && (
         <AddListingModal
-          onClose={() => setIsAddListingModalOpen(false)}
+          editingListing={editingListing}
+          onClose={() => {
+            setIsAddListingModalOpen(false);
+            setEditingListing(null);
+          }}
           onAddListing={handleAddListing}
+          onUpdateListing={handleUpdateListing}
         />
       )}
 
