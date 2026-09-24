@@ -347,7 +347,7 @@ export default function App() {
       {/* Main Body */}
       <main className="flex-1">
         
-        {userRole === 'landlord' ? (
+        {userRole === 'landlord' && activeTab === 'landlord' ? (
           /* HOUSE OWNER VIEW ONLY */
           <div className="app-container py-8">
             <LandlordDashboard
@@ -359,6 +359,7 @@ export default function App() {
               onEditListing={(lst) => setEditingListing(lst)}
               onDeleteListing={handleDeleteListing}
               onOpenChatModal={(l) => setChatListing(l)}
+              onSelectListing={(l) => setSelectedListing(l)}
             />
           </div>
         ) : activeTab === 'student-portal' ? (

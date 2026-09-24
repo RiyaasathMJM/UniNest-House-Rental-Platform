@@ -15,25 +15,58 @@ import {
   MapPin,
   ExternalLink,
   Pencil,
-  RotateCcw
+  RotateCcw,
+  Compass,
+  Search,
+  Footprints,
+  SlidersHorizontal
 } from 'lucide-react';
+import { UNIVERSITIES, PROPERTY_TYPES } from '../data/mockData';
 
 export default function LandlordDashboard({
-  listings,
-  applications,
+  listings = [],
+  applications = [],
   messages = [],
   onUpdateApplicationStatus,
   onOpenAddListing,
 
   onEditListing,
   onDeleteListing,
-  onOpenChatModal
+  onOpenChatModal,
+  onSelectListing
 }) {
 
   const [activeTab, setActiveTab] = useState('applications');
 
+  // Search & Filter State for All Houses in Listing tab
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedUniversity, setSelectedUniversity] = useState('all');
+  const [selectedType, setSelectedType] = useState('all');
+
   const pendingApps = applications.filter(a => a.status === 'Pending');
   const approvedApps = applications.filter(a => a.status === 'Approved');
+
+  // Filtered listings for "All Houses in Listing" tab
+  const filteredAllListings = listings.filter(item => {
+    if (selectedUniversity !== 'all' && item.universityId !== selectedUniversity) {
+      return false;
+    }
+    if (selectedType !== 'all' && item.type !== selectedType) {
+      return false;
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      const matchesTitle = item.title?.toLowerCase().includes(q);
+      const matchesAddress = item.address?.toLowerCase().includes(q);
+      const matchesFaculty = item.nearbyFaculty?.toLowerCase().includes(q);
+      const matchesType = item.type?.toLowerCase().includes(q);
+      const matchesLandlord = item.landlord?.name?.toLowerCase().includes(q);
+      if (!matchesTitle && !matchesAddress && !matchesFaculty && !matchesType && !matchesLandlord) {
+        return false;
+      }
+    }
+    return true;
+  });
 
   return (
     <div className="space-y-8 animate-fade-in pb-12">
@@ -46,7 +79,7 @@ export default function LandlordDashboard({
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">House Owner Management Dashboard</h1>
           <p className="text-xs sm:text-sm text-slate-700 font-medium max-w-xl">
-            Manage your student accommodation listings, verify student tenant applications, check Google Maps locations, and chat directly with inquiry students.
+            Manage your student accommodation listings, explore all market listings, verify student tenant applications, check Google Maps locations, and chat directly with inquiry students.
           </p>
         </div>
 
@@ -61,16 +94,16 @@ export default function LandlordDashboard({
       {/* Overview Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
+        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2 cursor-pointer hover:border-emerald-300 transition-all" onClick={() => setActiveTab('listings')}>
           <div className="flex items-center justify-between text-slate-700 font-extrabold">
-            <span className="text-xs">Active Listings</span>
+            <span className="text-xs">My Active Listings</span>
             <Building2 size={18} className="text-emerald-600" />
           </div>
           <span className="text-3xl font-extrabold text-slate-900">{listings.length}</span>
           <p className="text-[11px] text-slate-600 font-semibold">Accommodation units online</p>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
+        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2 cursor-pointer hover:border-emerald-300 transition-all" onClick={() => setActiveTab('applications')}>
           <div className="flex items-center justify-between text-slate-700 font-extrabold">
             <span className="text-xs">Pending Applications</span>
             <Clock size={18} className="text-amber-600" />
@@ -79,7 +112,7 @@ export default function LandlordDashboard({
           <p className="text-[11px] text-slate-600 font-semibold">Requires your review</p>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
+        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2 cursor-pointer hover:border-emerald-300 transition-all" onClick={() => setActiveTab('applications')}>
           <div className="flex items-center justify-between text-slate-700 font-extrabold">
             <span className="text-xs">Approved Tenants</span>
             <CheckCircle2 size={18} className="text-sky-600" />
@@ -88,27 +121,25 @@ export default function LandlordDashboard({
           <p className="text-[11px] text-slate-600 font-semibold">Confirmed move-ins</p>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
+        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2 cursor-pointer hover:border-emerald-300 transition-all" onClick={() => setActiveTab('all-listings')}>
           <div className="flex items-center justify-between text-slate-700 font-extrabold">
-            <span className="text-xs">Total Yield Potential</span>
-            <TrendingUp size={18} className="text-purple-600" />
+            <span className="text-xs">All Platform Houses</span>
+            <Compass size={18} className="text-purple-600" />
           </div>
-          <span className="text-2xl font-extrabold text-purple-700">
-            Rs. {listings.reduce((sum, l) => sum + l.monthlyRent, 0).toLocaleString()}
-          </span>
-          <p className="text-[11px] text-slate-600 font-semibold">Combined monthly yield</p>
+          <span className="text-3xl font-extrabold text-purple-700">{listings.length}</span>
+          <p className="text-[11px] text-slate-600 font-semibold">Total houses in market listing</p>
         </div>
 
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex border-b border-slate-200 text-sm font-extrabold gap-6">
+      <div className="flex border-b border-slate-200 text-sm font-extrabold gap-6 overflow-x-auto pb-0.5">
         <button
           onClick={() => setActiveTab('applications')}
-          className={`pb-3 transition-colors flex items-center gap-2 relative ${
+          className={`pb-3 transition-colors flex items-center gap-2 whitespace-nowrap ${
             activeTab === 'applications'
               ? 'text-emerald-700 border-b-2 border-emerald-600 font-extrabold'
-              : 'text-slate-700 hover:text-slate-900'
+              : 'text-slate-700 hover:text-slate-900 font-bold'
           }`}
         >
           <Users size={16} />
@@ -122,10 +153,10 @@ export default function LandlordDashboard({
 
         <button
           onClick={() => setActiveTab('messages')}
-          className={`pb-3 transition-colors flex items-center gap-2 ${
+          className={`pb-3 transition-colors flex items-center gap-2 whitespace-nowrap ${
             activeTab === 'messages'
               ? 'text-emerald-700 border-b-2 border-emerald-600 font-extrabold'
-              : 'text-slate-700 hover:text-slate-900'
+              : 'text-slate-700 hover:text-slate-900 font-bold'
           }`}
         >
           <MessageSquare size={16} />
@@ -134,14 +165,31 @@ export default function LandlordDashboard({
 
         <button
           onClick={() => setActiveTab('listings')}
-          className={`pb-3 transition-colors flex items-center gap-2 ${
+          className={`pb-3 transition-colors flex items-center gap-2 whitespace-nowrap ${
             activeTab === 'listings'
               ? 'text-emerald-700 border-b-2 border-emerald-600 font-extrabold'
-              : 'text-slate-700 hover:text-slate-900'
+              : 'text-slate-700 hover:text-slate-900 font-bold'
           }`}
         >
           <Building2 size={16} />
           <span>My Listings ({listings.length})</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('all-listings')}
+          className={`pb-3 transition-colors flex items-center gap-2 whitespace-nowrap ${
+            activeTab === 'all-listings'
+              ? 'text-emerald-700 border-b-2 border-emerald-600 font-extrabold'
+              : 'text-slate-700 hover:text-slate-900 font-bold'
+          }`}
+        >
+          <Compass size={16} />
+          <span className="flex items-center gap-1.5">
+            <span>All Houses in Listing</span>
+            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">
+              {listings.length}
+            </span>
+          </span>
         </button>
       </div>
 
@@ -333,7 +381,8 @@ export default function LandlordDashboard({
                   <img
                     src={lst.images[0]}
                     alt={lst.title}
-                    className="w-24 h-24 rounded-xl object-cover border border-slate-200 shrink-0"
+                    className="w-24 h-24 rounded-xl object-cover border border-slate-200 shrink-0 cursor-pointer"
+                    onClick={() => onSelectListing && onSelectListing(lst)}
                   />
                   <div className="flex-1 space-y-1.5">
                     <div className="flex items-center gap-2">
@@ -351,7 +400,12 @@ export default function LandlordDashboard({
                       </a>
                     </div>
                     
-                    <h4 className="font-extrabold text-slate-900 text-sm line-clamp-1">{lst.title}</h4>
+                    <h4 
+                      onClick={() => onSelectListing && onSelectListing(lst)}
+                      className="font-extrabold text-slate-900 text-sm line-clamp-1 cursor-pointer hover:text-emerald-700 transition-colors"
+                    >
+                      {lst.title}
+                    </h4>
                     <p className="text-xs text-slate-700 flex items-center gap-1 font-bold">
                       <MapPin size={13} className="text-sky-600" /> {lst.nearbyFaculty}
                     </p>
@@ -362,12 +416,20 @@ export default function LandlordDashboard({
 
                   <div className="flex sm:flex-col gap-2 shrink-0 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
                     <button
-                      onClick={() => onEditListing && onEditListing(lst)}
-                      className="btn btn-outline text-xs px-3 py-1.5 border-sky-300 text-sky-700 hover:bg-sky-50 font-extrabold flex items-center justify-center gap-1"
-                      title="Edit accommodation details"
+                      onClick={() => onSelectListing && onSelectListing(lst)}
+                      className="btn btn-accent text-xs px-3 py-1.5 font-extrabold flex items-center justify-center gap-1"
                     >
-                      <Pencil size={13} /> Edit
+                      <Eye size={13} /> View Unit
                     </button>
+                    {onEditListing && (
+                      <button
+                        onClick={() => onEditListing(lst)}
+                        className="btn btn-outline text-xs px-3 py-1.5 border-sky-300 text-sky-700 hover:bg-sky-50 font-extrabold flex items-center justify-center gap-1"
+                        title="Edit accommodation details"
+                      >
+                        <Pencil size={13} /> Edit
+                      </button>
+                    )}
                     <div className="flex gap-2">
                       <a
                         href={googleMapsLink}
@@ -393,6 +455,215 @@ export default function LandlordDashboard({
         </div>
       )}
 
+      {/* Tab Content 4: All Houses in Listing (Market Explorer) */}
+      {activeTab === 'all-listings' && (
+        <div className="space-y-6">
+          
+          {/* Header & Filter Card */}
+          <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <h3 className="text-lg font-extrabold text-slate-900 flex items-center gap-2">
+                  <Compass className="text-emerald-600" size={20} />
+                  <span>All Platform Accommodation Listings</span>
+                </h3>
+                <p className="text-xs text-slate-600 font-medium">
+                  Browse, search, and inspect all student housing units published on UniNest (similar to student housing view).
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-slate-600 font-bold bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200">
+                  Showing <strong className="text-emerald-700">{filteredAllListings.length}</strong> of {listings.length} houses
+                </span>
+                {onOpenAddListing && (
+                  <button onClick={onOpenAddListing} className="btn btn-accent text-xs px-3.5 py-2 font-extrabold shrink-0">
+                    + Post New Listing
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Filter Inputs */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
+              
+              {/* Search input */}
+              <div className="relative">
+                <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search house, location, faculty..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-slate-50 text-xs font-semibold text-slate-800 border border-slate-200 rounded-xl pl-9 pr-3 py-2.5 outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              {/* Campus filter */}
+              <div>
+                <select
+                  value={selectedUniversity}
+                  onChange={(e) => setSelectedUniversity(e.target.value)}
+                  className="w-full bg-slate-50 text-xs font-semibold text-slate-800 border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 cursor-pointer"
+                >
+                  <option value="all">All University Campuses</option>
+                  {(UNIVERSITIES || []).map((u) => (
+                    <option key={u.id} value={u.id}>
+                      {u.name} ({u.code})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Property Type Filter */}
+              <div>
+                <select
+                  value={selectedType}
+                  onChange={(e) => setSelectedType(e.target.value)}
+                  className="w-full bg-slate-50 text-xs font-semibold text-slate-800 border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 cursor-pointer"
+                >
+                  <option value="all">All Property Types</option>
+                  {(PROPERTY_TYPES || []).map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Reset Filters button */}
+              <div>
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setSelectedUniversity('all');
+                    setSelectedType('all');
+                  }}
+                  className="w-full btn btn-outline text-xs py-2.5 border-slate-300 text-slate-700 hover:bg-slate-100 font-bold"
+                >
+                  Reset Search Filters
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+          {/* Listings Cards Grid - Student Dashboard Style */}
+          {filteredAllListings.length === 0 ? (
+            <div className="p-10 rounded-2xl bg-white border border-slate-200 text-center text-slate-600 text-sm font-semibold shadow-sm space-y-2">
+              <p className="text-slate-900 font-extrabold">No accommodation houses matched your search criteria.</p>
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedUniversity('all');
+                  setSelectedType('all');
+                }}
+                className="btn btn-accent text-xs px-4 py-2 font-bold"
+              >
+                Clear Search & Show All
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {filteredAllListings.map((lst) => {
+                const googleMapsQuery = encodeURIComponent(lst.googleMapsUrl || `${lst.title}, ${lst.address || lst.nearbyFaculty}`);
+                const googleMapsLink = lst.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${googleMapsQuery}`;
+
+                return (
+                  <div
+                    key={lst.id}
+                    className="bg-white rounded-2xl border border-slate-200 hover:border-emerald-400 transition-all duration-300 flex flex-col justify-between hover:-translate-y-1 hover:shadow-lg overflow-hidden group"
+                  >
+                    {/* Top Image Section */}
+                    <div className="relative h-48 w-full overflow-hidden bg-slate-100">
+                      <img
+                        src={lst.images[0]}
+                        alt={lst.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-10">
+                        <span className="badge badge-verified text-[10px] shadow-sm">
+                          {lst.type}
+                        </span>
+                        {lst.genderPreference && (
+                          <span className="px-2 py-0.5 rounded-md bg-slate-900/80 backdrop-blur-md text-[10px] text-white font-bold">
+                            {lst.genderPreference}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] font-bold text-white z-10">
+                        <span className="px-2 py-0.5 rounded-md bg-emerald-900/85 backdrop-blur-md border border-emerald-300 text-emerald-100 flex items-center gap-1">
+                          <Footprints size={11} /> {lst.walkingTimeMinutes || 5} min walk
+                        </span>
+                        <span className="px-2 py-0.5 rounded-md bg-slate-900/80 backdrop-blur-md text-slate-200">
+                          {lst.landlord?.name ? `Owner: ${lst.landlord.name}` : 'Owner Listed'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Card Body */}
+                    <div className="p-4 space-y-3 flex-1 flex flex-col justify-between">
+                      <div className="space-y-1.5">
+                        <h4
+                          onClick={() => onSelectListing && onSelectListing(lst)}
+                          className="font-extrabold text-slate-900 text-base line-clamp-1 group-hover:text-emerald-700 cursor-pointer transition-colors"
+                        >
+                          {lst.title}
+                        </h4>
+                        
+                        <p className="text-xs text-slate-600 flex items-center gap-1 font-bold">
+                          <MapPin size={13} className="text-emerald-600 shrink-0" /> {lst.nearbyFaculty}
+                        </p>
+
+                        <div className="flex flex-wrap items-center gap-1 pt-1 text-[10px]">
+                          {(lst.amenities || []).slice(0, 3).map((am) => (
+                            <span key={am} className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-semibold border border-slate-200">
+                              {am}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                        <div>
+                          <div className="text-base font-extrabold text-emerald-800">
+                            Rs. {lst.monthlyRent.toLocaleString()} <span className="text-[11px] font-normal text-slate-500">/mo</span>
+                          </div>
+                          <p className="text-[10px] text-slate-500">Deposit: Rs. {(lst.securityDeposit || lst.monthlyRent).toLocaleString()}</p>
+                        </div>
+
+                        <div className="flex items-center gap-1.5">
+                          <a
+                            href={googleMapsLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors border border-slate-200"
+                            title="Open Google Maps Location"
+                          >
+                            <MapPin size={14} />
+                          </a>
+
+                          <button
+                            onClick={() => onSelectListing && onSelectListing(lst)}
+                            className="btn btn-accent text-xs px-3 py-1.5 font-extrabold flex items-center gap-1"
+                          >
+                            <Eye size={13} /> View Unit
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+        </div>
+      )}
+
     </div>
   );
 }
+

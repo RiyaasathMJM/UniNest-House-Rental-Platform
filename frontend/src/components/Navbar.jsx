@@ -164,6 +164,18 @@ export default function Navbar({
                 </button>
 
                 <button
+                  onClick={() => setActiveTab('explore')}
+                  className={`btn text-xs px-3.5 py-2.5 rounded-xl font-extrabold border transition-all flex items-center gap-1.5 ${
+                    activeTab === 'explore'
+                      ? 'bg-emerald-600 text-white border-emerald-400 shadow-md shadow-emerald-500/20'
+                      : 'bg-slate-800/80 text-slate-200 border-slate-700 hover:bg-slate-700'
+                  }`}
+                >
+                  <Compass size={15} />
+                  <span>All Market Houses</span>
+                </button>
+
+                <button
                   onClick={onOpenAddListing}
                   className="btn bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 font-extrabold shadow-md shadow-emerald-500/25 border border-emerald-400"
                 >
