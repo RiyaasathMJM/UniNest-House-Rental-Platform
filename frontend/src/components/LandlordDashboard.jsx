@@ -22,6 +22,7 @@ import {
   SlidersHorizontal
 } from 'lucide-react';
 import { UNIVERSITIES, PROPERTY_TYPES } from '../data/mockData';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function LandlordDashboard({
   listings = [],
@@ -35,7 +36,7 @@ export default function LandlordDashboard({
   onOpenChatModal,
   onSelectListing
 }) {
-
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState('applications');
 
   // Search & Filter State for All Houses in Listing tab
@@ -75,11 +76,11 @@ export default function LandlordDashboard({
       <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-emerald-50 via-white to-teal-50 border border-emerald-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-600 font-bold">House Owner Portal</span>
+            <span className="text-xs text-slate-600 font-bold">{t('landlordPortalTag', 'House Owner Portal')}</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">House Owner Management Dashboard</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">{t('landlordDashboardTitle', 'House Owner Management Dashboard')}</h1>
           <p className="text-xs sm:text-sm text-slate-700 font-medium max-w-xl">
-            Manage your student accommodation listings, explore all market listings, verify student tenant applications, check Google Maps locations, and chat directly with inquiry students.
+            {t('landlordSub', 'Manage your student accommodation listings, explore all market listings, verify student tenant applications, check Google Maps locations, and chat directly with inquiry students.')}
           </p>
         </div>
 
@@ -87,7 +88,7 @@ export default function LandlordDashboard({
           onClick={onOpenAddListing}
           className="btn btn-accent px-5 py-3 text-sm font-extrabold shadow-md shadow-emerald-600/20 shrink-0"
         >
-          <PlusCircle size={18} /> Post New Accommodation
+          <PlusCircle size={18} /> {t('postNewAccom', 'Post New Accommodation')}
         </button>
       </div>
 
@@ -96,7 +97,7 @@ export default function LandlordDashboard({
         
         <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2 cursor-pointer hover:border-emerald-300 transition-all" onClick={() => setActiveTab('listings')}>
           <div className="flex items-center justify-between text-slate-700 font-extrabold">
-            <span className="text-xs">My Active Listings</span>
+            <span className="text-xs">{t('myActiveListings', 'My Active Listings')}</span>
             <Building2 size={18} className="text-emerald-600" />
           </div>
           <span className="text-3xl font-extrabold text-slate-900">{listings.length}</span>
@@ -105,7 +106,7 @@ export default function LandlordDashboard({
 
         <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2 cursor-pointer hover:border-emerald-300 transition-all" onClick={() => setActiveTab('applications')}>
           <div className="flex items-center justify-between text-slate-700 font-extrabold">
-            <span className="text-xs">Pending Applications</span>
+            <span className="text-xs">{t('pendingApplications', 'Pending Applications')}</span>
             <Clock size={18} className="text-amber-600" />
           </div>
           <span className="text-3xl font-extrabold text-amber-600">{pendingApps.length}</span>
@@ -114,7 +115,7 @@ export default function LandlordDashboard({
 
         <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2 cursor-pointer hover:border-emerald-300 transition-all" onClick={() => setActiveTab('applications')}>
           <div className="flex items-center justify-between text-slate-700 font-extrabold">
-            <span className="text-xs">Approved Tenants</span>
+            <span className="text-xs">{t('approvedTenants', 'Approved Tenants')}</span>
             <CheckCircle2 size={18} className="text-sky-600" />
           </div>
           <span className="text-3xl font-extrabold text-sky-700">{approvedApps.length}</span>
@@ -123,7 +124,7 @@ export default function LandlordDashboard({
 
         <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2 cursor-pointer hover:border-emerald-300 transition-all" onClick={() => setActiveTab('all-listings')}>
           <div className="flex items-center justify-between text-slate-700 font-extrabold">
-            <span className="text-xs">All Platform Houses</span>
+            <span className="text-xs">{t('allPlatformHouses', 'All Platform Houses')}</span>
             <Compass size={18} className="text-purple-600" />
           </div>
           <span className="text-3xl font-extrabold text-purple-700">{listings.length}</span>
@@ -143,7 +144,7 @@ export default function LandlordDashboard({
           }`}
         >
           <Users size={16} />
-          <span>Student Applications</span>
+          <span>{t('tabApplications', 'Student Applications')}</span>
           {pendingApps.length > 0 && (
             <span className="w-5 h-5 rounded-full bg-amber-500 text-white font-bold text-[11px] flex items-center justify-center shadow-sm">
               {pendingApps.length}
@@ -160,7 +161,7 @@ export default function LandlordDashboard({
           }`}
         >
           <MessageSquare size={16} />
-          <span>Direct Student Inquiries ({messages.length})</span>
+          <span>{t('tabMessages', 'Direct Student Inquiries')} ({messages.length})</span>
         </button>
 
         <button
@@ -172,7 +173,7 @@ export default function LandlordDashboard({
           }`}
         >
           <Building2 size={16} />
-          <span>My Listings ({listings.length})</span>
+          <span>{t('tabMyListings', 'My Listings')} ({listings.length})</span>
         </button>
 
         <button
@@ -185,7 +186,7 @@ export default function LandlordDashboard({
         >
           <Compass size={16} />
           <span className="flex items-center gap-1.5">
-            <span>All Houses in Listing</span>
+            <span>{t('tabAllListings', 'All Houses in Listing')}</span>
             <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">
               {listings.length}
             </span>

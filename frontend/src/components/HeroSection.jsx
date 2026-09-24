@@ -1,6 +1,7 @@
 import React from 'react';
 import { Search, ShieldCheck, MapPin, Footprints, DollarSign, CheckCircle2, Sparkles } from 'lucide-react';
 import { UNIVERSITIES } from '../data/mockData';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function HeroSection({
   searchQuery,
@@ -10,6 +11,8 @@ export default function HeroSection({
   quickFilter,
   setQuickFilter
 }) {
+  const { t } = useLanguage();
+
   return (
     <section className="relative overflow-hidden pt-8 pb-12 border-b border-slate-200 bg-gradient-to-b from-sky-50/80 via-white to-slate-50">
       
@@ -27,12 +30,12 @@ export default function HeroSection({
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight">
-            Find <span className="bg-gradient-to-r from-sky-600 via-teal-600 to-emerald-600 bg-clip-text text-transparent">Boarding & Annexes</span> Near Campus
+          <h1 className="text-3xl sm:text-5xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+            {t('heroTitle', 'Find Your Perfect Student Housing Near Campus')}
           </h1>
 
-          <p className="text-sm sm:text-lg text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed">
-            Transparent pricing, walking distance calculation to faculties, and direct contact with house owners — no hidden agent commissions.
+          <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed">
+            {t('heroSubtitle', 'Verified annexes, boarding rooms, and apartments near Sri Lankan universities with transparent utility bills & location maps.')}
           </p>
 
           {/* Interactive Search Bar Panel */}
@@ -44,7 +47,7 @@ export default function HeroSection({
                 <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none z-10" />
                 <input
                   type="text"
-                  placeholder="Search by faculty, street, annex, or amenity..."
+                  placeholder={t('searchPlaceholder', 'Search by house title, location, nearby faculty...')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-11 pr-4 py-3.5 bg-slate-50 text-sm font-semibold border border-slate-300 rounded-xl outline-none focus:border-sky-500 focus:bg-white focus:ring-2 focus:ring-sky-500/20 transition-all text-slate-900 placeholder:text-slate-400"
@@ -59,7 +62,7 @@ export default function HeroSection({
                   onChange={(e) => setSelectedUniversity(e.target.value)}
                   className="w-full pl-11 pr-8 py-3.5 bg-slate-50 text-sm font-semibold border border-slate-300 rounded-xl outline-none cursor-pointer hover:border-sky-500 focus:bg-white transition-all text-slate-900"
                 >
-                  <option value="all">All Universities</option>
+                  <option value="all">{t('navAllUniversities', 'All Universities')}</option>
                   {UNIVERSITIES.map((u) => (
                     <option key={u.id} value={u.id}>
                       {u.name} ({u.code})
@@ -72,7 +75,6 @@ export default function HeroSection({
 
             {/* Quick Filter Tag Chips */}
             <div className="flex flex-wrap items-center justify-center gap-2.5 pt-3 border-t border-slate-100 text-xs">
-              <span className="text-slate-500 font-bold mr-1">Quick Filters:</span>
               
               <button
                 onClick={() => setQuickFilter(quickFilter === 'walking' ? 'all' : 'walking')}
@@ -83,7 +85,7 @@ export default function HeroSection({
                 }`}
               >
                 <Footprints size={13} />
-                <span>Walking Distance (&lt;500m)</span>
+                <span>{t('filterWalking', '5 Min Walk')}</span>
               </button>
 
               <button
@@ -94,7 +96,7 @@ export default function HeroSection({
                     : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
                 }`}
               >
-                <span>Girls Only</span>
+                <span>{t('filterGirls', 'Girls Only')}</span>
               </button>
 
               <button
@@ -106,7 +108,7 @@ export default function HeroSection({
                 }`}
               >
                 <DollarSign size={13} />
-                <span>All Bills Included</span>
+                <span>{t('filterBills', 'Bills Included')}</span>
               </button>
 
               <button
@@ -117,7 +119,7 @@ export default function HeroSection({
                     : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
                 }`}
               >
-                <span>Under Rs. 20,000/mo</span>
+                <span>{t('filterBudget', 'Under Rs. 20,000')}</span>
               </button>
               
             </div>

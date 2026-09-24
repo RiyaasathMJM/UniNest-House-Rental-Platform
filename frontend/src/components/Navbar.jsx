@@ -12,9 +12,11 @@ import {
   SlidersHorizontal,
   LayoutDashboard,
   LogOut,
-  Compass
+  Compass,
+  Globe
 } from 'lucide-react';
 import { UNIVERSITIES } from '../data/mockData';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Navbar({
   userRole,
@@ -30,6 +32,7 @@ export default function Navbar({
   onOpenAddListing
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const { language, setLanguage, t, languages } = useLanguage();
 
   return (
     <header className="sticky top-0 z-50 bg-slate-900/95 backdrop-blur-xl transition-all border-b border-slate-800/90 shadow-lg shadow-slate-950/20 text-white">
@@ -82,9 +85,26 @@ export default function Navbar({
             </div>
           )}
 
-          {/* Right: Role-Specific Action Items */}
+          {/* Right: Role-Specific Action Items & Language Selector */}
           <div className="hidden md:flex items-center gap-3 shrink-0">
             
+            {/* Language Selector Dropdown */}
+            <div className="relative flex items-center">
+              <Globe size={15} className="absolute left-3 text-sky-400 pointer-events-none z-10" />
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                className="bg-slate-800/90 text-xs font-bold text-slate-100 border border-slate-700 rounded-xl pl-9 pr-3 py-2.5 outline-none cursor-pointer hover:border-sky-400 transition-all shadow-inner"
+                title="Change Language / மொழி / භාෂාව"
+              >
+                {languages.map((lang) => (
+                  <option key={lang.code} value={lang.code} className="bg-slate-900 text-white font-semibold">
+                    {lang.flag} {lang.nativeName}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             {userRole === 'student' ? (
               /* STUDENT-ONLY NAVBAR ACTIONS */
               <>
@@ -98,7 +118,7 @@ export default function Navbar({
                   }`}
                 >
                   <Compass size={15} />
-                  <span>Find Housing</span>
+                  <span>{t('navFindHousing', 'Find Housing')}</span>
                 </button>
 
                 {/* Compare Tool */}
@@ -108,7 +128,7 @@ export default function Navbar({
                     className="btn text-xs border border-sky-400/40 text-sky-300 bg-sky-500/15 hover:bg-sky-500/25 px-3 py-2 rounded-xl font-extrabold"
                   >
                     <SlidersHorizontal size={15} />
-                    <span>Compare ({compareListCount})</span>
+                    <span>{t('navCompare', 'Compare')} ({compareListCount})</span>
                   </button>
                 )}
 
@@ -116,7 +136,7 @@ export default function Navbar({
                 <button
                   onClick={onOpenBookmarks}
                   className="btn relative p-2.5 text-slate-200 hover:text-white bg-slate-800/80 hover:bg-slate-700 rounded-xl border border-slate-700"
-                  title="Saved Accommodations"
+                  title={t('savedUnits', 'Saved Accommodations')}
                 >
                   <Bookmark size={19} className={savedIds.length > 0 ? "fill-sky-400 text-sky-400" : ""} />
                   {savedIds.length > 0 && (
@@ -136,14 +156,14 @@ export default function Navbar({
                   }`}
                 >
                   <UserCheck size={16} />
-                  <span>My Student Dashboard</span>
+                  <span>{t('navStudentDashboard', 'My Student Dashboard')}</span>
                 </button>
 
                 {/* Account Switcher / Logout */}
                 <button
                   onClick={onLogout}
                   className="p-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-300 hover:text-rose-400 hover:border-rose-500/40 hover:bg-rose-950/40 transition-colors"
-                  title="Switch Role / Logout"
+                  title={t('navLogout', 'Switch Account / Logout')}
                 >
                   <LogOut size={16} />
                 </button>
@@ -160,7 +180,7 @@ export default function Navbar({
                   }`}
                 >
                   <LayoutDashboard size={16} />
-                  <span>House Owner Dashboard</span>
+                  <span>{t('navLandlordDashboard', 'House Owner Dashboard')}</span>
                 </button>
 
                 <button
@@ -172,7 +192,7 @@ export default function Navbar({
                   }`}
                 >
                   <Compass size={15} />
-                  <span>All Market Houses</span>
+                  <span>{t('navAllMarketHouses', 'All Market Houses')}</span>
                 </button>
 
                 <button
@@ -180,14 +200,14 @@ export default function Navbar({
                   className="btn bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 font-extrabold shadow-md shadow-emerald-500/25 border border-emerald-400"
                 >
                   <PlusCircle size={16} />
-                  <span>Post New Listing</span>
+                  <span>{t('navPostNewListing', 'Post New Listing')}</span>
                 </button>
 
                 {/* Account Switcher / Logout */}
                 <button
                   onClick={onLogout}
                   className="p-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-300 hover:text-rose-400 hover:border-rose-500/40 hover:bg-rose-950/40 transition-colors"
-                  title="Switch Role / Logout"
+                  title={t('navLogout', 'Switch Account / Logout')}
                 >
                   <LogOut size={16} />
                 </button>
@@ -198,6 +218,18 @@ export default function Navbar({
 
           {/* Mobile Menu Toggle Button */}
           <div className="flex md:hidden items-center gap-2">
+            {/* Mobile Language Switcher */}
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className="bg-slate-800 text-[11px] font-bold text-slate-100 border border-slate-700 rounded-lg px-2 py-1.5 outline-none cursor-pointer"
+            >
+              {languages.map((lang) => (
+                <option key={lang.code} value={lang.code} className="bg-slate-900 text-white">
+                  {lang.flag} {lang.nativeName}
+                </option>
+              ))}
+            </select>
             {userRole === 'student' && (
               <button
                 onClick={onOpenBookmarks}

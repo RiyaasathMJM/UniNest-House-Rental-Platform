@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   Building2
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function StudentDashboard({
   savedListings,
@@ -21,6 +22,7 @@ export default function StudentDashboard({
   onOpenChatModal,
   onRemoveBookmark
 }) {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState('applications');
 
   return (
@@ -30,17 +32,17 @@ export default function StudentDashboard({
       <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-sky-50 via-white to-blue-50 border border-sky-200/90 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-500 font-bold">Student Housing Portal</span>
+            <span className="text-xs text-slate-500 font-bold">{t('studentPortalTag', 'Student Housing Portal')}</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">Student Housing Portal</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">{t('studentPortalTitle', 'Student Housing Portal')}</h1>
           <p className="text-xs sm:text-sm text-slate-600 font-medium max-w-xl">
-            Track your viewing applications, review bookmarked boarding houses, and chat directly with landlords.
+            {t('studentPortalSub', 'Track your viewing applications, review bookmarked boarding houses, and chat directly with landlords.')}
           </p>
         </div>
 
         <div className="flex items-center gap-4 shrink-0">
           <div className="px-5 py-3 rounded-2xl bg-white border border-slate-200 shadow-sm text-center">
-            <span className="text-xs text-slate-500 font-bold block">Saved Units</span>
+            <span className="text-xs text-slate-500 font-bold block">{t('savedUnits', 'Saved Units')}</span>
             <span className="text-2xl font-extrabold text-sky-600">{savedListings.length}</span>
           </div>
           <div className="px-5 py-3 rounded-2xl bg-white border border-slate-200 shadow-sm text-center">
@@ -61,7 +63,7 @@ export default function StudentDashboard({
           }`}
         >
           <Clock size={16} />
-          <span>My Rental Applications ({applications.length})</span>
+          <span>{t('tabRentalApps', 'My Rental Applications')} ({applications.length})</span>
         </button>
 
         <button
@@ -73,7 +75,7 @@ export default function StudentDashboard({
           }`}
         >
           <MessageSquare size={16} />
-          <span>Direct Messages ({messages.length})</span>
+          <span>{t('tabDirectMsgs', 'Direct Messages')} ({messages.length})</span>
         </button>
 
         <button
@@ -85,7 +87,7 @@ export default function StudentDashboard({
           }`}
         >
           <Bookmark size={16} />
-          <span>Saved Boarding Houses ({savedListings.length})</span>
+          <span>{t('tabSavedHouses', 'Saved Boarding Houses')} ({savedListings.length})</span>
         </button>
       </div>
 

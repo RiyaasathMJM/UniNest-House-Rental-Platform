@@ -11,6 +11,7 @@ import {
   SlidersHorizontal,
   CheckCircle2
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function ListingCard({
   listing,
@@ -20,6 +21,7 @@ export default function ListingCard({
   isCompared,
   onToggleCompare
 }) {
+  const { t } = useLanguage();
   const {
     id,
     title,
@@ -55,7 +57,7 @@ export default function ListingCard({
         <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-10">
           <div className="flex flex-wrap items-center gap-1.5 pointer-events-auto">
             <span className="badge badge-distance shadow-sm backdrop-blur-md">
-              <Footprints size={12} /> {walkingTimeMinutes} min walk
+              <Footprints size={12} /> {walkingTimeMinutes} {t('minWalk', 'min walk')}
             </span>
           </div>
 
@@ -125,16 +127,16 @@ export default function ListingCard({
 
         {/* Utility Bills Inclusions Strip */}
         <div className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-          <span className="text-slate-500 font-bold text-[11px]">Included Bills:</span>
+          <span className="text-slate-500 font-bold text-[11px]">{t('includedBills', 'Included Bills')}:</span>
           <div className="flex items-center gap-2.5 font-bold">
             <span className={`flex items-center gap-1 ${billsIncluded.wifi ? 'text-emerald-700' : 'text-slate-400 line-through'}`}>
-              <Wifi size={12} /> Wi-Fi
+              <Wifi size={12} /> {t('wifi', 'Wi-Fi')}
             </span>
             <span className={`flex items-center gap-1 ${billsIncluded.water ? 'text-emerald-700' : 'text-slate-400 line-through'}`}>
-              <Droplets size={12} /> Water
+              <Droplets size={12} /> {t('water', 'Water')}
             </span>
             <span className={`flex items-center gap-1 ${billsIncluded.electricity ? 'text-emerald-700' : 'text-slate-400 line-through'}`}>
-              <Zap size={12} /> Power
+              <Zap size={12} /> {t('electricity', 'Power')}
             </span>
           </div>
         </div>
@@ -144,9 +146,9 @@ export default function ListingCard({
           <div>
             <div className="flex items-baseline gap-1">
               <span className="text-xl font-extrabold text-slate-900">Rs. {monthlyRent.toLocaleString()}</span>
-              <span className="text-xs text-slate-500 font-semibold">/ month</span>
+              <span className="text-xs text-slate-500 font-semibold">{t('perMonth', '/ month')}</span>
             </div>
-            <p className="text-[11px] text-slate-500 font-medium">Deposit: Rs. {securityDeposit.toLocaleString()}</p>
+            <p className="text-[11px] text-slate-500 font-medium">{t('securityDeposit', 'Deposit')}: Rs. {securityDeposit.toLocaleString()}</p>
           </div>
 
           <div className="flex items-center gap-2">
@@ -171,7 +173,7 @@ export default function ListingCard({
               onClick={() => onSelectListing(listing)}
               className="btn btn-primary text-xs px-3.5 py-2.5 rounded-xl font-bold"
             >
-              View Unit
+              {t('viewUnit', 'View Unit')}
             </button>
 
           </div>

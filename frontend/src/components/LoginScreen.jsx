@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { GraduationCap, Home, ArrowRight, ShieldCheck, User, Lock, Eye, EyeOff, KeyRound, Mail, Phone, School, UserPlus, LogIn } from 'lucide-react';
+import { GraduationCap, Home, ArrowRight, ShieldCheck, User, Lock, Eye, EyeOff, KeyRound, Mail, Phone, School, UserPlus, LogIn, Globe } from 'lucide-react';
 import { apiService } from '../services/api';
 import { UNIVERSITIES } from '../data/mockData';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function LoginScreen({ onLogin }) {
+  const { language, setLanguage, t, languages } = useLanguage();
   const [mode, setMode] = useState('login'); // 'login' | 'register'
   const [role, setRole] = useState('student'); // 'student' | 'landlord'
 
@@ -205,18 +207,35 @@ export default function LoginScreen({ onLogin }) {
       {/* Main Container */}
       <div className="relative z-10 w-full max-w-md animate-fade-in space-y-6">
 
+        {/* Language Switcher Bar */}
+        <div className="flex justify-center items-center gap-1.5 p-1 bg-white border border-slate-200 rounded-full shadow-sm max-w-xs mx-auto text-xs">
+          {languages.map((lang) => (
+            <button
+              key={lang.code}
+              type="button"
+              onClick={() => setLanguage(lang.code)}
+              className={`px-3 py-1 rounded-full font-bold transition-all flex items-center gap-1 ${
+                language === lang.code
+                  ? 'bg-sky-600 text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <span>{lang.flag}</span>
+              <span>{lang.nativeName}</span>
+            </button>
+          ))}
+        </div>
+
         {/* Header Branding */}
         <div className="text-center space-y-2">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-emerald-500 mb-2 shadow-lg shadow-sky-500/20 text-white">
             <GraduationCap size={32} />
           </div>
           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-            Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-emerald-600">UniNest</span>
+            {t('loginTitle', 'Welcome to UniNest')}
           </h1>
           <p className="text-slate-600 text-sm font-medium">
-            {mode === 'login'
-              ? 'Sign in to access student housing & listings'
-              : 'Create an account to start browsing or hosting student accommodation'}
+            {t('loginSubtitle', 'Find and manage verified student boarding rooms, annexes & apartments near Sri Lankan universities')}
           </p>
         </div>
 
